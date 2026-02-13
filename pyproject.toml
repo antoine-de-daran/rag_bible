@@ -1,0 +1,50 @@
+[project]
+name = "rag-bible"
+version = "0.1.0"
+description = "French Bible RAG system with FAISS + cross-encoder reranking"
+requires-python = ">=3.12"
+dependencies = [
+    "sentence-transformers>=3.0.0",
+    "faiss-cpu>=1.8.0",
+    "torch>=2.0.0",
+    "numpy>=1.24.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.0",
+    "pytest>=8.0.0",
+    "mypy>=1.13.0",
+    "pre-commit>=4.0.0",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+
+[[tool.mypy.overrides]]
+module = [
+    "sentence_transformers.*",
+    "faiss.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+markers = [
+    "unit: fast tests, no model loading",
+    "integration: requires models and bible.db",
+]
+addopts = "-m 'not integration'"
