@@ -9,7 +9,7 @@ import numpy as np
 from sentence_transformers import CrossEncoder, SentenceTransformer
 
 import config
-from embeddings import load_cross_encoder, load_embedding_model
+from rag.embeddings import load_cross_encoder, load_embedding_model
 
 
 def normalize_scores(raw_scores: np.ndarray) -> np.ndarray:

@@ -1,0 +1,9 @@
+{% for r in results %}
+<article>
+  <header>
+    <strong>{{ r.book_title }}</strong> — {{ r.chapter }}{% if r.verse %}:{{ r.verse }}{% endif %}
+    <span class="score-badge" data-label="{{ r.label }}">{{ r.label }} ({{ r.pct }}%)</span>
+  </header>
+  <p>{{ r.text | replace("\n", "<br>") | safe }}</p>
+</article>
+{% endfor %}

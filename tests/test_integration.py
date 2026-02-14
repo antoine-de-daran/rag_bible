@@ -6,7 +6,7 @@ import pytest
 @pytest.mark.integration
 def test_creation_query_surfaces_genesis() -> None:
     """Creation query returns at least one Genesis verse."""
-    from retrieve import load_pipeline, search
+    from rag.retrieve import load_pipeline, search
 
     index, mapping, embed_model, cross_encoder = load_pipeline()
     results = search("Dieu créa le ciel et la terre", index, mapping, embed_model, cross_encoder)
@@ -19,7 +19,7 @@ def test_creation_query_surfaces_genesis() -> None:
 @pytest.mark.integration
 def test_forgiveness_query_multiple_books() -> None:
     """Forgiveness query returns verses from multiple books."""
-    from retrieve import load_pipeline, search
+    from rag.retrieve import load_pipeline, search
 
     index, mapping, embed_model, cross_encoder = load_pipeline()
     results = search("le pardon et la miséricorde", index, mapping, embed_model, cross_encoder)
@@ -32,7 +32,7 @@ def test_forgiveness_query_multiple_books() -> None:
 @pytest.mark.integration
 def test_all_scores_in_range() -> None:
     """All result scores are between 0.0 and 1.0."""
-    from retrieve import load_pipeline, search
+    from rag.retrieve import load_pipeline, search
 
     index, mapping, embed_model, cross_encoder = load_pipeline()
 
@@ -51,7 +51,7 @@ def test_all_scores_in_range() -> None:
 @pytest.mark.integration
 def test_search_time_under_2_seconds() -> None:
     """Each search completes in under 2 seconds."""
-    from retrieve import load_pipeline, search
+    from rag.retrieve import load_pipeline, search
 
     index, mapping, embed_model, cross_encoder = load_pipeline()
 
@@ -71,7 +71,7 @@ def test_search_time_under_2_seconds() -> None:
 @pytest.mark.integration
 def test_print_sample_results() -> None:
     """Print formatted results for manual review."""
-    from retrieve import load_pipeline, search
+    from rag.retrieve import load_pipeline, search
 
     index, mapping, embed_model, cross_encoder = load_pipeline()
 

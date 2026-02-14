@@ -1,6 +1,7 @@
 """Atomic ingestion script: filter, embed, and index Bible verses."""
 
 import json
+import logging
 import sqlite3
 from pathlib import Path
 from typing import Any
@@ -9,7 +10,9 @@ import faiss
 from sentence_transformers import SentenceTransformer
 
 import config
-from embeddings import encode_texts, load_embedding_model
+from rag.embeddings import encode_texts, load_embedding_model
+
+logger = logging.getLogger(__name__)
 
 
 def fetch_verses(db_path: Path) -> list[dict[str, Any]]:
@@ -159,27 +162,28 @@ def main(
     mapping_path : Path
         Output path for the JSON mapping.
     """
-    print(f"Fetching verses from {db_path}")
+    logger.info("Fetching verses from %s", db_path)
     verses = fetch_verses(db_path)
-    print(f"  Total verses: {len(verses)}")
+    logger.info("Total verses: %d", len(verses))
 
     filtered = filter_verses(verses)
-    print(f"  After filtering: {len(filtered)}")
+    logger.info("After filtering: %d", len(filtered))
 
     mapping = build_mapping(filtered)
     texts = [v["text"] for v in filtered]
 
-    print("Loading embedding model...")
+    logger.info("Loading embedding model...")
     model = load_embedding_model()
 
-    print("Building FAISS index...")
+    logger.info("Building FAISS index...")
     index = build_index(texts, model)
-    print(f"  Index size: {index.ntotal}")
+    logger.info("Index size: %d", index.ntotal)
 
-    print(f"Saving artifacts to {index_path.parent}")
+    logger.info("Saving artifacts to %s", index_path.parent)
     save_artifacts(index, mapping, index_path, mapping_path)
-    print("Done.")
+    logger.info("Done.")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     main()

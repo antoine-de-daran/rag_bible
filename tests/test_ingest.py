@@ -9,7 +9,7 @@ import config
 @pytest.mark.unit
 def test_fetch_verses_returns_all_rows() -> None:
     """fetch_verses reads all rows from bible.db."""
-    from ingest import fetch_verses
+    from rag.ingest import fetch_verses
 
     verses = fetch_verses(config.DB_PATH)
     assert len(verses) == 35480
@@ -18,7 +18,7 @@ def test_fetch_verses_returns_all_rows() -> None:
 @pytest.mark.unit
 def test_fetch_verses_has_rowid() -> None:
     """Each verse dict includes a rowid key."""
-    from ingest import fetch_verses
+    from rag.ingest import fetch_verses
 
     verses = fetch_verses(config.DB_PATH)
     assert "rowid" in verses[0]
@@ -29,7 +29,7 @@ def test_filter_verses_removes_short_text(
     sample_verses: list[dict[str, Any]],
 ) -> None:
     """Verses with text shorter than MIN_TEXT_LENGTH are filtered out."""
-    from ingest import filter_verses
+    from rag.ingest import filter_verses
 
     result = filter_verses(sample_verses, min_length=10, min_words=3)
     texts = [v["text"] for v in result]
@@ -43,7 +43,7 @@ def test_filter_verses_removes_few_words(
     sample_verses: list[dict[str, Any]],
 ) -> None:
     """Verses with fewer than MIN_WORD_COUNT words are filtered out."""
-    from ingest import filter_verses
+    from rag.ingest import filter_verses
 
     result = filter_verses(sample_verses, min_length=10, min_words=3)
     texts = [v["text"] for v in result]
@@ -58,7 +58,7 @@ def test_filter_verses_keeps_valid(
     sample_verses: list[dict[str, Any]],
 ) -> None:
     """Normal verses pass both filters."""
-    from ingest import filter_verses
+    from rag.ingest import filter_verses
 
     result = filter_verses(sample_verses, min_length=10, min_words=3)
     texts = [v["text"] for v in result]
@@ -71,7 +71,7 @@ def test_build_mapping_structure(
     sample_verses: list[dict[str, Any]],
 ) -> None:
     """Mapping entries have all required keys."""
-    from ingest import build_mapping
+    from rag.ingest import build_mapping
 
     mapping = build_mapping(sample_verses)
     required_keys = {
@@ -94,7 +94,7 @@ def test_build_mapping_preserves_original_text(
     sample_verses: list[dict[str, Any]],
 ) -> None:
     """Mapping preserves original text including newlines."""
-    from ingest import build_mapping
+    from rag.ingest import build_mapping
 
     mapping = build_mapping(sample_verses)
     genesis_1 = next(m for m in mapping if m["rowid"] == 1)
@@ -108,7 +108,7 @@ def test_ingest_creates_artifacts(tmp_data_dir: Path) -> None:
 
     import faiss
 
-    from ingest import main
+    from rag.ingest import main
 
     index_path = tmp_data_dir / "index.faiss"
     mapping_path = tmp_data_dir / "mapping.json"

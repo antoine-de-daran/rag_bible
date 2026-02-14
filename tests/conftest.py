@@ -1,9 +1,12 @@
 """Shared test fixtures for the RAG Bible test suite."""
 
+from collections.abc import Generator
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 import pytest
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -152,3 +155,61 @@ def tmp_data_dir(tmp_path: Path) -> Path:
     data_dir = tmp_path / "data"
     data_dir.mkdir()
     return data_dir
+
+
+def _mock_search_results(relevant: bool = True) -> list[dict[str, Any]]:
+    """Build fake search results for testing."""
+    if not relevant:
+        return [
+            {
+                "book_title": "La Genèse",
+                "chapter": "1",
+                "verse": "1",
+                "text": "AU COMMENCEMENT, Dieu créa le ciel et la terre.",
+                "score": 0.2,
+            },
+        ]
+    return [
+        {
+            "book_title": "Évangile selon saint Jean",
+            "chapter": "3",
+            "verse": "16",
+            "text": "Car Dieu a tellement aimé le monde\nqu'il a donné son Fils unique.",
+            "score": 0.92,
+        },
+        {
+            "book_title": "Lettre aux Romains",
+            "chapter": "8",
+            "verse": "28",
+            "text": "Nous le savons, quand les hommes aiment Dieu.",
+            "score": 0.65,
+        },
+    ]
+
+
+@pytest.fixture
+def mock_pipeline() -> Generator[None, None, None]:
+    """Patch app pipeline so no models are loaded."""
+    with (
+        patch("app.pipeline", {"loaded": True}),
+        patch("app._run_search", side_effect=lambda q: _mock_search_results(relevant=True)),
+    ):
+        yield
+
+
+@pytest.fixture
+def mock_pipeline_low_scores() -> Generator[None, None, None]:
+    """Patch app pipeline with only low-score results."""
+    with (
+        patch("app.pipeline", {"loaded": True}),
+        patch("app._run_search", side_effect=lambda q: _mock_search_results(relevant=False)),
+    ):
+        yield
+
+
+@pytest.fixture
+def client(mock_pipeline: None) -> TestClient:
+    """FastAPI test client with mocked pipeline."""
+    from app import app as fastapi_app
+
+    return TestClient(fastapi_app)

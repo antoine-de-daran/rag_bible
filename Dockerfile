@@ -5,9 +5,14 @@ WORKDIR /app
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen
+RUN uv sync --frozen --no-dev
 
-COPY bible.db config.py embeddings.py ingest.py retrieve.py ./
-COPY tests/ tests/
+COPY config.py app.py ./
+COPY rag/ rag/
+COPY templates/ templates/
+COPY static/ static/
+COPY data/ data/
 
-CMD ["uv", "run", "pytest"]
+EXPOSE 7860
+
+CMD ["uv", "run", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]

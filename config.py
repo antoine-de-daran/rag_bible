@@ -3,8 +3,8 @@
 from pathlib import Path
 
 # Paths
-DB_PATH: Path = Path(__file__).parent / "bible.db"
 DATA_DIR: Path = Path(__file__).parent / "data"
+DB_PATH: Path = DATA_DIR / "bible.db"
 INDEX_PATH: Path = DATA_DIR / "index.faiss"
 MAPPING_PATH: Path = DATA_DIR / "mapping.json"
 
@@ -25,3 +25,18 @@ MIN_WORD_COUNT: int = 3
 
 # Query prefix (empty for MiniLM, set for bge-m3 later)
 QUERY_PREFIX: str = ""
+
+# Web serving
+CORS_ORIGINS: list[str] = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://localhost:3000",
+]
+RELEVANCE_THRESHOLD: float = 0.5
+SCORE_LABELS: list[tuple[float, str]] = [
+    (0.8, "Tres pertinent"),
+    (0.5, "Pertinent"),
+    (0.3, "Peu pertinent"),
+    (0.0, "Faible pertinence"),
+]
+MAX_QUERY_LENGTH: int = 300
