@@ -187,12 +187,25 @@ def _mock_search_results(relevant: bool = True) -> list[dict[str, Any]]:
     ]
 
 
+def _mock_context(result: dict[str, Any], *_args: Any, **_kwargs: Any) -> list[dict[str, Any]]:
+    """Return a single-verse context for mock tests."""
+    return [
+        {
+            "chapter": result["chapter"],
+            "verse": result["verse"],
+            "text": result["text"],
+            "is_match": True,
+        }
+    ]
+
+
 @pytest.fixture
 def mock_pipeline() -> Generator[None, None, None]:
     """Patch app pipeline so no models are loaded."""
     with (
-        patch("app.pipeline", {"loaded": True}),
+        patch("app.pipeline", {"loaded": True, "mapping": [], "verse_index": {}}),
         patch("app._run_search", side_effect=lambda q: _mock_search_results(relevant=True)),
+        patch("app.get_verse_context", side_effect=_mock_context),
     ):
         yield
 
@@ -201,8 +214,9 @@ def mock_pipeline() -> Generator[None, None, None]:
 def mock_pipeline_low_scores() -> Generator[None, None, None]:
     """Patch app pipeline with only low-score results."""
     with (
-        patch("app.pipeline", {"loaded": True}),
+        patch("app.pipeline", {"loaded": True, "mapping": [], "verse_index": {}}),
         patch("app._run_search", side_effect=lambda q: _mock_search_results(relevant=False)),
+        patch("app.get_verse_context", side_effect=_mock_context),
     ):
         yield
 

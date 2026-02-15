@@ -24,6 +24,10 @@
     .score-badge[data-label="Faible pertinence"] { background: #6a6a6a; }
     article { margin-bottom: 1rem; }
     article header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+    .context-block { padding: 0.5rem 0; }
+    .context-verse { padding: 0.3rem 0.5rem; margin: 0.2rem 0; font-size: 0.95rem; color: var(--pico-muted-color); }
+    .verse-ref { font-weight: bold; margin-right: 0.5rem; font-size: 0.85rem; }
+    .matched-verse { background: rgba(255, 255, 255, 0.05); border-left: 3px solid var(--pico-primary); padding-left: 0.7rem; color: var(--pico-color); }
   </style>
 </head>
 <body>
@@ -67,5 +71,35 @@
   </main>
 
   <div hx-get="/health" hx-trigger="load" hx-swap="none" style="display:none;"></div>
+
+  <script>
+    const MIN_WORDS = 5;
+    const input = document.getElementById("query-input");
+    const hint = document.createElement("small");
+    hint.id = "word-hint";
+    hint.style.color = "var(--pico-muted-color)";
+    input.parentNode.insertBefore(hint, input.nextSibling);
+
+    function wordCount(text) {
+      const cleaned = text.replace(/<[^>]*>/g, "").trim();
+      return cleaned ? cleaned.split(/\s+/).length : 0;
+    }
+
+    input.addEventListener("input", function () {
+      const count = wordCount(this.value);
+      if (count > 0 && count < MIN_WORDS) {
+        hint.textContent = count + "/" + MIN_WORDS + " mots minimum";
+      } else {
+        hint.textContent = "";
+      }
+    });
+
+    document.body.addEventListener("htmx:configRequest", function (evt) {
+      const params = evt.detail.parameters;
+      if (params.query !== undefined && wordCount(params.query) < MIN_WORDS) {
+        evt.preventDefault();
+      }
+    });
+  </script>
 </body>
 </html>

@@ -47,6 +47,7 @@ module = [
     "uvicorn.*",
     "fastapi.*",
     "starlette.*",
+    "markupsafe.*",
 ]
 ignore_missing_imports = true
 

@@ -40,3 +40,5 @@ SCORE_LABELS: list[tuple[float, str]] = [
     (0.0, "Faible pertinence"),
 ]
 MAX_QUERY_LENGTH: int = 300
+MIN_QUERY_WORDS: int = 5
+CONTEXT_VERSES: int = 2

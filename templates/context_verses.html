@@ -1,0 +1,8 @@
+<div class="context-block">
+{% for cv in r.context_verses %}
+  <div class="context-verse{% if cv.is_match %} matched-verse{% endif %}">
+    <span class="verse-ref">{{ cv.chapter }}{% if cv.verse %}:{{ cv.verse }}{% endif %}</span>
+    {% if cv.is_match %}{{ cv.text | nl2br }}{% else %}{{ cv.text | replace("\n", " ") }}{% endif %}
+  </div>
+{% endfor %}
+</div>
