@@ -1,0 +1,16 @@
+.git
+.venv
+__pycache__
+*.pyc
+.mypy_cache
+.ruff_cache
+.pytest_cache
+tests/
+docs/
+_bmad-output/
+.claude/
+.dockerignore
+.gitignore
+.pre-commit-config.yaml
+Makefile
+README.md

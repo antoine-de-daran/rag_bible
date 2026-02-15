@@ -1,5 +1,6 @@
 """Central configuration for the RAG Bible pipeline."""
 
+import os
 from pathlib import Path
 
 # Paths
@@ -27,10 +28,9 @@ MIN_WORD_COUNT: int = 3
 QUERY_PREFIX: str = ""
 
 # Web serving
+_DEFAULT_CORS = "http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000"
 CORS_ORIGINS: list[str] = [
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "http://localhost:3000",
+    o.strip() for o in os.environ.get("CORS_ORIGINS", _DEFAULT_CORS).split(",") if o.strip()
 ]
 RELEVANCE_THRESHOLD: float = 0.5
 SCORE_LABELS: list[tuple[float, str]] = [
