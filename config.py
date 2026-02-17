@@ -32,7 +32,7 @@ _DEFAULT_CORS = "http://localhost:8000,http://127.0.0.1:8000,http://localhost:30
 CORS_ORIGINS: list[str] = [
     o.strip() for o in os.environ.get("CORS_ORIGINS", _DEFAULT_CORS).split(",") if o.strip()
 ]
-RELEVANCE_THRESHOLD: float = 0.5
+RELEVANCE_THRESHOLD: float = 0.0
 SCORE_LABELS: list[tuple[float, str]] = [
     (0.8, "Tres pertinent"),
     (0.5, "Pertinent"),

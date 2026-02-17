@@ -15,8 +15,6 @@
     .indicator { display: none; text-align: center; padding: 2rem 0; color: var(--pico-muted-color); }
     .htmx-request .indicator { display: block; }
     .htmx-request #results-content { opacity: 0.4; }
-    .examples { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
-    .examples button { font-size: 0.85rem; padding: 0.3rem 0.7rem; cursor: pointer; }
     .score-badge { float: right; font-size: 0.85rem; padding: 0.1rem 0.5rem; border-radius: 4px; background: var(--pico-primary-background); color: var(--pico-primary-inverse); }
     .score-badge[data-label="Tres pertinent"] { background: #2e7d32; }
     .score-badge[data-label="Pertinent"] { background: #1565c0; }
@@ -48,21 +46,6 @@
         autofocus
       >
     </form>
-
-    <div class="examples">
-      <button type="button"
-        hx-post="/search" hx-target="#results-container" hx-indicator="#results-container"
-        hx-vals='{"query": "Que dit la Bible sur le pardon ?"}'>Que dit la Bible sur le pardon ?</button>
-      <button type="button"
-        hx-post="/search" hx-target="#results-container" hx-indicator="#results-container"
-        hx-vals='{"query": "Comment trouver la paix interieure ?"}'>Comment trouver la paix interieure ?</button>
-      <button type="button"
-        hx-post="/search" hx-target="#results-container" hx-indicator="#results-container"
-        hx-vals='{"query": "Pourquoi Dieu permet-il la souffrance ?"}'>Pourquoi Dieu permet-il la souffrance ?</button>
-      <button type="button"
-        hx-post="/search" hx-target="#results-container" hx-indicator="#results-container"
-        hx-vals='{"query": "Que dit Jesus sur l amour du prochain ?"}'>Que dit Jesus sur l'amour du prochain ?</button>
-    </div>
 
     <div id="results-container">
       <div class="indicator" aria-busy="true">Recherche en cours...</div>

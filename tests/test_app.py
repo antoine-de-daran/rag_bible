@@ -94,13 +94,14 @@ class TestSearchEndpoint:
         assert response.status_code == 200
         assert "Veuillez saisir" in response.text
 
-    def test_all_low_scores_returns_no_results(self, mock_pipeline_low_scores: None) -> None:
+    def test_low_scores_still_shown(self, mock_pipeline_low_scores: None) -> None:
         from app import app as fastapi_app
 
         low_client = TestClient(fastapi_app)
         response = low_client.post("/search", data={"query": "un deux trois quatre cinq"})
         assert response.status_code == 200
-        assert "Aucun verset pertinent" in response.text
+        assert "La Gen" in response.text
+        assert "Faible pertinence" in response.text
 
     def test_truncates_long_query(self, client: TestClient) -> None:
         long_query = "mot " * 100
