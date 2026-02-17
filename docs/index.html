@@ -27,9 +27,6 @@
     .context-verse { padding: 0.3rem 0.5rem; margin: 0.2rem 0; font-size: 0.95rem; color: var(--pico-muted-color); }
     .verse-ref { font-weight: bold; margin-right: 0.5rem; font-size: 0.85rem; }
     .matched-verse { background: rgba(255, 255, 255, 0.05); border-left: 3px solid var(--pico-primary); padding-left: 0.7rem; color: var(--pico-color); }
-    #server-status { text-align: center; padding: 0.75rem; margin-bottom: 1rem; border-radius: 4px; background: var(--pico-muted-border-color); color: var(--pico-muted-color); font-size: 0.9rem; }
-    #server-status.connected { background: #2e7d32; color: #fff; }
-    #server-status.error { background: #c62828; color: #fff; }
   </style>
 </head>
 <body>
@@ -37,8 +34,6 @@
     <h1>RAG Bible</h1>
     <p class="subtitle">Posez une question sur la Bible et trouvez les versets les plus pertinents.</p>
   </header>
-
-  <div id="server-status">Connexion au serveur...</div>
 
   <main>
     <form id="search-form" hx-post="/search" hx-target="#results-container" hx-indicator="#results-container">
@@ -65,34 +60,6 @@
   <script>
     const API_BASE = "https://adedaran-rag-bible.hf.space";
     const MIN_WORDS = 5;
-
-    // Pre-warm: ping the backend and show connection status
-    (function () {
-      const status = document.getElementById("server-status");
-      const start = Date.now();
-      const timer = setInterval(function () {
-        const elapsed = ((Date.now() - start) / 1000).toFixed(0);
-        status.textContent = "Connexion au serveur... (" + elapsed + "s)";
-      }, 1000);
-
-      fetch(API_BASE + "/health")
-        .then(function (res) {
-          clearInterval(timer);
-          if (res.ok) {
-            const elapsed = ((Date.now() - start) / 1000).toFixed(1);
-            status.textContent = "Serveur connecte (" + elapsed + "s)";
-            status.classList.add("connected");
-            setTimeout(function () { status.style.display = "none"; }, 3000);
-          } else {
-            throw new Error("HTTP " + res.status);
-          }
-        })
-        .catch(function (err) {
-          clearInterval(timer);
-          status.textContent = "Impossible de joindre le serveur. Reessayez plus tard.";
-          status.classList.add("error");
-        });
-    })();
 
     // Rewrite HTMX request URLs to point to the API backend
     document.body.addEventListener("htmx:configRequest", function (evt) {
