@@ -98,13 +98,13 @@ body {
 body::before {
   content: "";
   flex: 2 0 0px;
-  transition: flex-grow var(--transition-smooth);
+  transition: flex-grow 500ms linear;
 }
 
 body::after {
   content: "";
   flex: 3 0 0px;
-  transition: flex-grow var(--transition-smooth);
+  transition: flex-grow 500ms linear;
 }
 
 /* --- Typography --- */
@@ -150,7 +150,7 @@ h1 {
   max-width: 560px;
   margin-left: auto;
   margin-right: auto;
-  transition: padding var(--transition-smooth);
+  transition: padding 500ms linear;
 }
 
 .verse-ref-header {
@@ -321,6 +321,9 @@ h1 {
 .carousel-slide {
   flex: 0 0 100%;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* --- Carousel Navigation --- */
