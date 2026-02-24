@@ -150,6 +150,7 @@ h1 {
 .page-header {
   text-align: left;
   padding: var(--space-xl) 0 var(--space-sm);
+  width: 100%;
   max-width: 560px;
   margin-left: auto;
   margin-right: auto;
