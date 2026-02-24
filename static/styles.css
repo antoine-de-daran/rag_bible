@@ -230,6 +230,12 @@ h1 {
   appearance: none;
 }
 
+.search-input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
 .search-input:focus-visible {
   border-color: var(--color-border);
   box-shadow: none;
@@ -273,8 +279,6 @@ h1 {
 .clear-button {
   right: calc(var(--touch-target-desktop) + var(--space-sm));
   color: var(--color-text-muted);
-  font-size: 1.2rem;
-  line-height: 1;
 }
 
 .word-count-hint {
