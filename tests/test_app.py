@@ -307,4 +307,4 @@ def test_search_integration_real_pipeline() -> None:
         response = real_client.post("/search", data={"query": "quel est l amour de Dieu"})
         assert response.status_code == 200
         assert "text/html" in response.headers["content-type"]
-        assert "<article" in response.text
+        assert "result-card" in response.text
