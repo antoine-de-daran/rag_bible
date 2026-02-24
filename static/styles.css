@@ -64,7 +64,7 @@
   --focus-offset: 2px;
 
   /* Transitions */
-  --transition-smooth: 350ms ease-out;
+  --transition-smooth: 500ms cubic-bezier(0.25, 0.1, 0.25, 1);
   --transition-quick: 150ms ease-out;
   --transition-fast: 200ms ease-out;
 }
@@ -115,10 +115,6 @@ h1 {
   font-weight: 700;
   line-height: 1.2;
   color: var(--color-text);
-}
-
-.page-header h1 {
-  transition: font-size var(--transition-smooth);
 }
 
 .subtitle {
@@ -175,11 +171,7 @@ h1 {
 }
 
 .results-active .page-header {
-  padding: var(--space-md) 0 var(--space-sm);
-}
-
-.results-active .page-header h1 {
-  font-size: 1.5rem;
+  padding: var(--space-sm) 0 var(--space-sm);
 }
 
 .results-active .subtitle {
@@ -726,10 +718,6 @@ textarea:focus-visible {
 @media (min-width: 768px) {
   h1 {
     font-size: 3rem;
-  }
-
-  .results-active .page-header h1 {
-    font-size: 1.75rem;
   }
 
   .search-input {
