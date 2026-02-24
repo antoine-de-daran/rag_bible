@@ -49,7 +49,6 @@
   --max-width: 960px;
   --sidebar-width: 280px;
   --card-width: 480px;
-  --card-peek: 60px;
   --touch-target-mobile: 44px;
   --touch-target-desktop: 40px;
 
@@ -65,6 +64,7 @@
 
   /* Transitions */
   --transition-smooth: 500ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  --transition-fade: 1000ms cubic-bezier(0.25, 0.1, 0.25, 1);
   --transition-quick: 150ms ease-out;
   --transition-fast: 200ms ease-out;
 }
@@ -137,8 +137,8 @@ h1 {
   max-height: 4em;
   opacity: 1;
   overflow: hidden;
-  transition: opacity var(--transition-smooth), max-height var(--transition-smooth),
-    margin var(--transition-smooth);
+  transition: opacity var(--transition-fade), max-height var(--transition-fade),
+    margin var(--transition-fade);
 }
 
 /* --- Page Header --- */
@@ -159,8 +159,10 @@ h1 {
   color: var(--color-text-muted);
   margin-top: 0;
   margin-bottom: var(--space-lg);
-  transition: font-size var(--transition-smooth), opacity var(--transition-smooth),
-    max-height var(--transition-smooth), margin var(--transition-smooth);
+  max-height: 3em;
+  overflow: hidden;
+  transition: font-size var(--transition-fade), opacity var(--transition-fade),
+    max-height var(--transition-fade), margin var(--transition-fade);
 }
 
 /* --- Results-Active State --- */
@@ -211,7 +213,7 @@ h1 {
   font-family: var(--font-ui);
   font-size: var(--font-size-base);
   line-height: 1.4;
-  padding: var(--space-sm) 6rem var(--space-sm) var(--space-md);
+  padding: var(--space-sm) 3.5rem var(--space-sm) var(--space-md);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-bg);
@@ -240,7 +242,6 @@ h1 {
   font-style: italic;
 }
 
-.search-button,
 .clear-button {
   position: absolute;
   top: 50%;
@@ -255,21 +256,7 @@ h1 {
   border-radius: var(--radius-sm);
   background: transparent;
   cursor: pointer;
-  color: var(--color-accent);
-}
-
-.search-button {
   right: var(--space-sm);
-}
-
-.search-button[aria-disabled="true"] {
-  opacity: 0.3;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-.clear-button {
-  right: calc(var(--touch-target-desktop) + var(--space-sm));
   color: var(--color-text-muted);
 }
 
@@ -280,9 +267,6 @@ h1 {
   text-align: left;
 }
 
-.results-active .search-bar {
-  max-width: 600px;
-}
 
 /* --- HTMX Loading States --- */
 
@@ -313,6 +297,17 @@ h1 {
   animation: pulse 1.5s ease-in-out infinite;
 }
 
+/* --- Results Fade-In --- */
+
+.results-content {
+  opacity: 0;
+  transition: opacity 400ms ease-in;
+}
+
+.results-content.visible {
+  opacity: 1;
+}
+
 /* --- Carousel --- */
 
 .carousel-viewport {
@@ -321,13 +316,11 @@ h1 {
 
 .carousel-track {
   display: flex;
-  gap: var(--space-lg);
 }
 
 .carousel-slide {
-  flex: 0 0 auto;
+  flex: 0 0 100%;
   min-width: 0;
-  width: var(--card-width);
 }
 
 /* --- Carousel Navigation --- */
@@ -681,22 +674,13 @@ textarea:focus-visible {
 /* --- Responsive: Mobile Touch Targets --- */
 
 @media (max-width: 767px) {
-  .search-button,
   .clear-button {
     width: var(--touch-target-mobile);
     height: var(--touch-target-mobile);
   }
 
-  .clear-button {
-    right: calc(var(--touch-target-mobile) + var(--space-sm));
-  }
-
   .search-input {
-    padding-right: calc(var(--touch-target-mobile) * 2 + var(--space-sm) * 2);
-  }
-
-  .carousel-slide {
-    width: calc(100vw - 64px);
+    padding-right: calc(var(--touch-target-mobile) + var(--space-sm) * 2);
   }
 
   .carousel-arrow {
