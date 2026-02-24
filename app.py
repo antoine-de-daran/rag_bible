@@ -196,19 +196,6 @@ def search_endpoint(request: Request, query: str = Form("")) -> HTMLResponse:
             context={"message": "Veuillez saisir une question ou un mot-cle."},
         )
 
-    word_count = len(cleaned.split())
-    if word_count < config.MIN_QUERY_WORDS:
-        return templates.TemplateResponse(
-            request=request,
-            name="error.html",
-            context={
-                "message": (
-                    f"Veuillez saisir au moins {config.MIN_QUERY_WORDS} mots "
-                    f"pour obtenir des resultats pertinents ({word_count} mot(s) saisi(s))."
-                )
-            },
-        )
-
     try:
         results = _run_search(cleaned)
     except Exception:

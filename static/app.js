@@ -13,37 +13,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function initSearchBar(appState) {
-    const MIN_WORDS = 5;
-
     const input = document.getElementById("query-input");
     const searchButton = document.querySelector(".search-button");
     const clearButton = document.querySelector(".clear-button");
-    const wordCountHint = document.getElementById("word-count-hint");
     if (!input) return;
 
-    function wordCount(text) {
-      const cleaned = text.replace(/<[^>]*>/g, "").trim();
-      return cleaned ? cleaned.split(/\s+/).length : 0;
-    }
-
     function updateValidation() {
-      const count = wordCount(input.value);
-      const hasContent = input.value.length > 0;
-
-      if (count > 0 && count < MIN_WORDS) {
-        wordCountHint.textContent = count + "/" + MIN_WORDS + " mots";
-        wordCountHint.classList.remove("hidden");
-      } else {
-        wordCountHint.textContent = "";
-        wordCountHint.classList.add("hidden");
-      }
+      const hasContent = input.value.trim().length > 0;
 
       if (clearButton) {
         clearButton.classList.toggle("hidden", !hasContent);
       }
 
       if (searchButton) {
-        searchButton.setAttribute("aria-disabled", count < MIN_WORDS ? "true" : "false");
+        searchButton.setAttribute("aria-disabled", hasContent ? "false" : "true");
       }
     }
 
@@ -58,13 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (clearButton) {
       clearButton.addEventListener("click", handleClear);
     }
-
-    document.body.addEventListener("htmx:configRequest", function (evt) {
-      const params = evt.detail.parameters;
-      if (params.query !== undefined && wordCount(params.query) < MIN_WORDS) {
-        evt.preventDefault();
-      }
-    });
 
     updateValidation();
 

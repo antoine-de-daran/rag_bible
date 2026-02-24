@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Sondez les Ecritures</title>
+  <title>« Sondez les Écritures »</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
@@ -33,13 +33,14 @@
   </button>
   <div class="sidebar-backdrop hidden"></div>
   <aside id="history-sidebar" class="history-sidebar" role="complementary" aria-label="Historique des recherches">
+    <h2 class="sidebar-title">Historique</h2>
     <div class="history-list"></div>
     <p class="history-empty">Vos recherches apparaitront ici</p>
   </aside>
 
-  <header class="page-header" aria-label="Sondez les Ecritures - Recherche semantique">
-    <h1>Sondez les Ecritures</h1>
-    <p class="subtitle">Recherche semantique dans la Bible</p>
+  <header class="page-header" aria-label="Sondez les Écritures - Recherche sémantique">
+    <h1>« Sondez les Écritures »</h1>
+    <p class="verse-ref-header"><em>Jean 5:39</em></p>
     <p class="description">Posez une question sur la Bible et trouvez les versets les plus pertinents.</p>
   </header>
 
@@ -53,7 +54,6 @@
         class="search-input"
         placeholder="Recherchez dans la Bible..."
         aria-label="Rechercher dans la Bible"
-        aria-describedby="word-count-hint"
         autocomplete="off"
         maxlength="300"
         required
@@ -68,8 +68,6 @@
         </svg>
       </button>
     </form>
-    <div id="word-count-hint" class="word-count-hint hidden" aria-live="polite"></div>
-
     <div id="results-container">
       <div class="indicator" role="status" aria-live="polite"><span class="loading-text">Recherche en cours...</span></div>
       <div id="results-content"></div>

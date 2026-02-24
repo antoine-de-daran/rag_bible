@@ -112,21 +112,10 @@ class TestSearchEndpoint:
 
 @pytest.mark.unit
 class TestInputValidation:
-    def test_two_word_query_rejected(self, client: TestClient) -> None:
-        response = client.post("/search", data={"query": "amour Dieu"})
-        assert "5 mots" in response.text
-
-    def test_four_word_query_rejected(self, client: TestClient) -> None:
-        response = client.post("/search", data={"query": "amour de Dieu pardon"})
-        assert "5 mots" in response.text
-
-    def test_five_word_query_accepted(self, client: TestClient) -> None:
-        response = client.post("/search", data={"query": "quel est l amour divin"})
-        assert "5 mots" not in response.text
-
-    def test_html_tags_stripped_before_word_count(self, client: TestClient) -> None:
-        response = client.post("/search", data={"query": "<b>un</b> <i>deux</i>"})
-        assert "5 mots" in response.text
+    def test_single_word_query_accepted(self, client: TestClient) -> None:
+        response = client.post("/search", data={"query": "amour"})
+        assert response.status_code == 200
+        assert "Veuillez saisir" not in response.text
 
 
 @pytest.mark.unit
