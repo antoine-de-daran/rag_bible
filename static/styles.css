@@ -95,10 +95,15 @@ body {
   min-height: 100dvh;
 }
 
-body::before,
+body::before {
+  content: "";
+  flex: 2 0 0px;
+  transition: flex-grow var(--transition-smooth);
+}
+
 body::after {
   content: "";
-  flex: 1 0 0px;
+  flex: 3 0 0px;
   transition: flex-grow var(--transition-smooth);
 }
 
@@ -132,7 +137,7 @@ h1 {
   font-weight: 400;
   line-height: var(--line-height-base);
   color: var(--color-text);
-  margin-top: var(--space-md);
+  margin-top: var(--space-xs);
   max-height: 4em;
   opacity: 1;
   overflow: hidden;
@@ -143,9 +148,22 @@ h1 {
 /* --- Page Header --- */
 
 .page-header {
-  text-align: center;
-  padding: var(--space-xl) 0 var(--space-lg);
+  text-align: left;
+  padding: var(--space-xl) 0 var(--space-sm);
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
   transition: padding var(--transition-smooth);
+}
+
+.verse-ref-header {
+  font-family: var(--font-scripture);
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  margin-top: 0;
+  margin-bottom: var(--space-lg);
+  transition: font-size var(--transition-smooth), opacity var(--transition-smooth),
+    max-height var(--transition-smooth), margin var(--transition-smooth);
 }
 
 /* --- Results-Active State --- */
@@ -167,6 +185,13 @@ h1 {
   font-size: 1rem;
 }
 
+.results-active .verse-ref-header {
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0;
+  overflow: hidden;
+}
+
 .results-active .description {
   opacity: 0;
   max-height: 0;
@@ -183,8 +208,7 @@ h1 {
 
 .search-bar {
   position: relative;
-  width: 90vw;
-  max-width: 600px;
+  max-width: 560px;
   margin: 0 auto var(--space-lg);
   transition: max-width var(--transition-smooth);
 }
@@ -206,14 +230,15 @@ h1 {
 }
 
 .search-input:focus-visible {
-  border-color: var(--color-accent);
-  box-shadow: var(--focus-ring);
+  border-color: var(--color-border);
+  box-shadow: none;
   outline: 2px solid transparent;
   outline-offset: var(--focus-offset);
 }
 
 .search-input::placeholder {
   color: var(--color-text-muted);
+  font-style: italic;
 }
 
 .search-button,
@@ -255,11 +280,11 @@ h1 {
   font-size: 0.85rem;
   color: var(--color-text-muted);
   margin-top: var(--space-xs);
-  text-align: center;
+  text-align: left;
 }
 
 .results-active .search-bar {
-  max-width: 500px;
+  max-width: 600px;
 }
 
 /* --- HTMX Loading States --- */
@@ -542,11 +567,19 @@ h1 {
   background: rgba(0, 0, 0, 0.3);
 }
 
+.sidebar-title {
+  font-family: var(--font-ui);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-md);
+}
+
 .history-empty {
   color: var(--color-text-muted);
   font-size: 0.9rem;
-  text-align: center;
-  padding: var(--space-lg) 0;
+  text-align: left;
+  padding: var(--space-md) 0;
 }
 
 .history-list:not(:empty) + .history-empty {
@@ -678,11 +711,6 @@ textarea:focus-visible {
 /* --- Responsive: Desktop Sidebar --- */
 
 @media (min-width: 768px) {
-  .sidebar-open {
-    padding-left: var(--sidebar-width);
-    transition: padding-left 300ms ease-out;
-  }
-
   .sidebar-backdrop {
     display: none !important;
   }
