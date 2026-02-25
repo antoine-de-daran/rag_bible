@@ -2,17 +2,25 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="description" content="Recherche semantique dans la Bible. Posez une question et trouvez les versets les plus pertinents.">
+  <meta name="theme-color" content="#f5f0e8">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Sondez les Ecritures">
   <title>« Sondez les Écritures »</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F4D6;</text></svg>">
+  <link rel="manifest" href="/static/manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet" fetchpriority="high">
   <link rel="stylesheet" href="/static/styles.css">
-  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-  <script src="https://unpkg.com/embla-carousel@8.0.0/embla-carousel.umd.js"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+  <script src="https://unpkg.com/embla-carousel@8.0.0/embla-carousel.umd.js" defer></script>
 </head>
 <body>
+  <a href="#search-form" class="skip-link">Aller au formulaire de recherche</a>
 
   <div class="offline-banner hidden" role="status" aria-live="polite">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -55,6 +63,7 @@
         class="search-input"
         placeholder="Recherchez dans la Bible..."
         aria-label="Rechercher dans la Bible"
+        inputmode="search"
         autocomplete="off"
         maxlength="300"
         required
@@ -68,7 +77,7 @@
         </svg>
       </button>
     </form>
-    <div id="results-container">
+    <div id="results-container" aria-live="polite">
       <div id="results-content"></div>
     </div>
   </main>

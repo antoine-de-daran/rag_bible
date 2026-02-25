@@ -1,8 +1,9 @@
-var CACHE_NAME = "rag-bible-v1";
+var CACHE_NAME = "rag-bible-v2";
 var CACHE_FILES = [
   "/static/index.html",
   "/static/styles.css",
   "/static/app.js",
+  "/static/manifest.json",
   "https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&display=swap",
   "https://unpkg.com/embla-carousel@8.0.0/embla-carousel.umd.js",
   "https://unpkg.com/htmx.org@2.0.4"

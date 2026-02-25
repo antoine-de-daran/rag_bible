@@ -1,0 +1,16 @@
+{
+  "name": "Sondez les Ecritures — Recherche semantique",
+  "short_name": "Sondez",
+  "description": "Recherche semantique dans la Bible",
+  "start_url": "/static/index.html",
+  "display": "standalone",
+  "background_color": "#f5f0e8",
+  "theme_color": "#f5f0e8",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

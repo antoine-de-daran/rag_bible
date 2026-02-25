@@ -6,8 +6,9 @@
         <polyline points="15 18 9 12 15 6"/>
       </svg>
     </button>
-    <div class="carousel-viewport" role="region" aria-label="Resultats de recherche" aria-live="polite" tabindex="0">
+    <div class="carousel-viewport" role="region" aria-label="Resultats de recherche" tabindex="0">
       <div class="carousel-track">
+        <div class="carousel-slide carousel-slide--spacer" aria-hidden="true"></div>
         {% for r in results %}
         <div class="carousel-slide">
           <div class="result-card">
@@ -24,6 +25,7 @@
           </div>
         </div>
         {% endfor %}
+        <div class="carousel-slide carousel-slide--spacer" aria-hidden="true"></div>
       </div>
     </div>
     <button type="button" class="carousel-arrow carousel-arrow-next" aria-label="Resultat suivant">
@@ -33,5 +35,6 @@
       </svg>
     </button>
   </div>
-  <div class="carousel-dots" role="tablist" aria-label="Navigation des resultats"></div>
+  <div class="carousel-dots" role="group" aria-label="Navigation des resultats"></div>
+  <div class="carousel-live sr-only" aria-live="polite" aria-atomic="true"></div>
 </div>

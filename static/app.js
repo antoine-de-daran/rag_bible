@@ -3,12 +3,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   window.appState = {};
 
+  var MOBILE_MQ = window.matchMedia("(max-width: 767px)");
+
   function initPageHeader(appState) {
-    const description = document.querySelector(".description");
-    const verseRef = document.querySelector(".verse-ref-header");
-    const header = document.querySelector(".page-header");
-    const body = document.body;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    var description = document.querySelector(".description");
+    var verseRef = document.querySelector(".verse-ref-header");
+    var header = document.querySelector(".page-header");
+    var body = document.body;
+    var reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
 
     document.body.addEventListener("htmx:beforeRequest", function (evt) {
       if (evt.detail.elt.id !== "search-form") return;
@@ -22,45 +26,58 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      const descHeight = description.offsetHeight;
-      const descMarginTop = parseFloat(getComputedStyle(description).marginTop);
-      const verseHeight = verseRef.offsetHeight;
-      const verseMarginBottom = parseFloat(getComputedStyle(verseRef).marginBottom);
-      const headerPaddingTop = parseFloat(getComputedStyle(header).paddingTop);
-      const rootFontSize = parseFloat(
+      var descHeight = description.offsetHeight;
+      var descMarginTop = parseFloat(
+        getComputedStyle(description).marginTop
+      );
+      var verseHeight = verseRef.offsetHeight;
+      var verseMarginBottom = parseFloat(
+        getComputedStyle(verseRef).marginBottom
+      );
+      var headerPaddingTop = parseFloat(
+        getComputedStyle(header).paddingTop
+      );
+      var rootFontSize = parseFloat(
         getComputedStyle(document.documentElement).fontSize
       );
-      const targetPaddingTop = 0.5 * rootFontSize;
-      const paddingDelta = headerPaddingTop - targetPaddingTop;
-      const bodyPaddingTop = parseFloat(getComputedStyle(body).paddingTop);
-      const spacerBeforeHeight =
+      var targetPaddingTop = 0.5 * rootFontSize;
+      var paddingDelta = headerPaddingTop - targetPaddingTop;
+      var bodyPaddingTop = parseFloat(
+        getComputedStyle(body).paddingTop
+      );
+      var spacerBeforeHeight =
         header.getBoundingClientRect().top -
         body.getBoundingClientRect().top -
         bodyPaddingTop;
 
-      body.style.paddingTop = (bodyPaddingTop + spacerBeforeHeight) + "px";
+      body.style.paddingTop =
+        (bodyPaddingTop + spacerBeforeHeight) + "px";
       body.classList.add("animating");
+      header.style.willChange = "padding";
 
-      const descTotal = descHeight + descMarginTop;
-      const verseTotal = verseHeight + verseMarginBottom;
-      const dockTotal = spacerBeforeHeight + paddingDelta;
-      const totalDistance = descTotal + verseTotal + dockTotal;
+      var descTotal = descHeight + descMarginTop;
+      var verseTotal = verseHeight + verseMarginBottom;
+      var dockTotal = spacerBeforeHeight + paddingDelta;
+      var totalDistance = descTotal + verseTotal + dockTotal;
 
       if (totalDistance <= 0) {
         body.style.paddingTop = "";
         body.classList.remove("animating");
         body.classList.add("results-active");
+        header.style.willChange = "";
         return;
       }
 
-      const startTime = performance.now();
+      var startTime = performance.now();
 
       function frame(now) {
-        const progress = Math.min((now - startTime) / ANIMATION_DURATION_MS, 1);
-        const collapsed = progress * totalDistance;
+        var progress = Math.min(
+          (now - startTime) / ANIMATION_DURATION_MS, 1
+        );
+        var collapsed = progress * totalDistance;
 
         if (descTotal > 0) {
-          const descProgress = Math.min(collapsed / descTotal, 1);
+          var descProgress = Math.min(collapsed / descTotal, 1);
           description.style.opacity = String(1 - descProgress);
           description.style.maxHeight =
             (descHeight * (1 - descProgress)) + "px";
@@ -68,9 +85,9 @@ document.addEventListener("DOMContentLoaded", function () {
             (descMarginTop * (1 - descProgress)) + "px";
         }
 
-        const afterDesc = collapsed - descTotal;
+        var afterDesc = collapsed - descTotal;
         if (afterDesc > 0 && verseTotal > 0) {
-          const verseProgress = Math.min(afterDesc / verseTotal, 1);
+          var verseProgress = Math.min(afterDesc / verseTotal, 1);
           verseRef.style.opacity = String(1 - verseProgress);
           verseRef.style.maxHeight =
             (verseHeight * (1 - verseProgress)) + "px";
@@ -78,13 +95,17 @@ document.addEventListener("DOMContentLoaded", function () {
             (verseMarginBottom * (1 - verseProgress)) + "px";
         }
 
-        const afterTextBlocks = collapsed - descTotal - verseTotal;
+        var afterTextBlocks = collapsed - descTotal - verseTotal;
         if (afterTextBlocks > 0 && dockTotal > 0) {
-          const dockProgress = Math.min(afterTextBlocks / dockTotal, 1);
+          var dockProgress = Math.min(
+            afterTextBlocks / dockTotal, 1
+          );
           body.style.paddingTop =
-            (bodyPaddingTop + spacerBeforeHeight * (1 - dockProgress)) + "px";
+            (bodyPaddingTop +
+              spacerBeforeHeight * (1 - dockProgress)) + "px";
           header.style.paddingTop =
-            (headerPaddingTop - paddingDelta * dockProgress) + "px";
+            (headerPaddingTop -
+              paddingDelta * dockProgress) + "px";
         }
 
         if (progress >= 1) {
@@ -105,12 +126,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function initSearchBar(appState) {
-    const input = document.getElementById("query-input");
-    const clearButton = document.querySelector(".clear-button");
+    var input = document.getElementById("query-input");
+    var clearButton = document.querySelector(".clear-button");
     if (!input) return;
 
     function updateValidation() {
-      const hasContent = input.value.trim().length > 0;
+      var hasContent = input.value.trim().length > 0;
 
       if (clearButton) {
         clearButton.classList.toggle("hidden", !hasContent);
@@ -127,12 +148,14 @@ document.addEventListener("DOMContentLoaded", function () {
         appState.embla = null;
       }
 
-      const resultsContainer = document.getElementById("results-container");
+      var resultsContainer =
+        document.getElementById("results-container");
       if (!resultsContainer) return;
 
-      const slides = resultsContainer.querySelectorAll(".carousel-slide");
+      var slides =
+        resultsContainer.querySelectorAll(".carousel-slide");
       slides.forEach(function (slide) {
-        const card = slide.querySelector(".result-card");
+        var card = slide.querySelector(".result-card");
         if (card) {
           card.style.minHeight = card.offsetHeight + "px";
           card.innerHTML = "";
@@ -140,15 +163,20 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
 
-      const prevBtn = resultsContainer.querySelector(".carousel-arrow-prev");
-      const nextBtn = resultsContainer.querySelector(".carousel-arrow-next");
+      var prevBtn = resultsContainer.querySelector(
+        ".carousel-arrow-prev"
+      );
+      var nextBtn = resultsContainer.querySelector(
+        ".carousel-arrow-next"
+      );
       if (prevBtn) prevBtn.setAttribute("aria-disabled", "true");
       if (nextBtn) nextBtn.setAttribute("aria-disabled", "true");
 
-      const dots = resultsContainer.querySelectorAll(".carousel-dot");
+      var dots =
+        resultsContainer.querySelectorAll(".carousel-dot");
       dots.forEach(function (dot) {
         dot.classList.remove("active");
-        dot.setAttribute("aria-selected", "false");
+        dot.setAttribute("aria-pressed", "false");
       });
     }
 
@@ -160,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     updateValidation();
 
-    const api = {
+    var api = {
       focus: function () { input.focus(); },
       getValue: function () { return input.value; },
       setValue: function (value) {
@@ -172,16 +200,32 @@ document.addEventListener("DOMContentLoaded", function () {
     return api;
   }
 
+  function initLoadingStates() {
+    var input = document.getElementById("query-input");
+
+    document.body.addEventListener("htmx:beforeRequest", function (evt) {
+      if (evt.detail.elt.id !== "search-form") return;
+      if (input) input.setAttribute("aria-busy", "true");
+    });
+
+    document.body.addEventListener("htmx:afterRequest", function (evt) {
+      if (evt.detail.elt.id !== "search-form") return;
+      if (input) input.removeAttribute("aria-busy");
+    });
+  }
+
   function initStatusMessages(appState) {
-    const resultsContainer = document.getElementById("results-container");
+    var resultsContainer =
+      document.getElementById("results-container");
     if (!resultsContainer) return;
 
-    const originalHTML = resultsContainer.innerHTML;
+    var originalHTML = resultsContainer.innerHTML;
 
     document.body.addEventListener("htmx:afterSwap", function (evt) {
       if (evt.detail.target.id !== "results-container") return;
 
-      const retryButton = resultsContainer.querySelector(".retry-button");
+      var retryButton =
+        resultsContainer.querySelector(".retry-button");
       if (retryButton) {
         retryButton.addEventListener("click", function () {
           resultsContainer.innerHTML = originalHTML;
@@ -192,11 +236,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  const ANIMATION_DURATION_MS = 630;
+  var ANIMATION_DURATION_MS = 630;
 
   function initCarousel(appState) {
-    const resultsContainer = document.getElementById("results-container");
-    if (!resultsContainer || typeof EmblaCarousel === "undefined") return;
+    var resultsContainer =
+      document.getElementById("results-container");
+    if (!resultsContainer || typeof EmblaCarousel === "undefined") {
+      return;
+    }
 
     document.body.addEventListener("htmx:afterSwap", function (evt) {
       if (evt.detail.target.id !== "results-container") return;
@@ -211,20 +258,37 @@ document.addEventListener("DOMContentLoaded", function () {
         appState.embla = null;
       }
 
-      const viewport = resultsContainer.querySelector(".carousel-viewport");
+      var viewport =
+        resultsContainer.querySelector(".carousel-viewport");
       if (!viewport) return;
 
       appState.embla = EmblaCarousel(viewport, {
         loop: false,
-        align: "center"
+        align: "center",
+        startIndex: 1
       });
 
-      const resultsContent = resultsContainer.querySelector(".results-content");
+      var slides = viewport.querySelectorAll(
+        ".carousel-slide:not(.carousel-slide--spacer)"
+      );
+      var maxHeight = 0;
+      slides.forEach(function (slide) {
+        var h = slide.scrollHeight;
+        if (h > maxHeight) maxHeight = h;
+      });
+      if (maxHeight > 0) {
+        viewport.style.minHeight = maxHeight + "px";
+      }
+
+      var resultsContent =
+        resultsContainer.querySelector(".results-content");
       if (resultsContent) {
-        const elapsed = appState.resultsActiveTimestamp
+        var elapsed = appState.resultsActiveTimestamp
           ? Date.now() - appState.resultsActiveTimestamp
           : ANIMATION_DURATION_MS;
-        const remaining = Math.max(0, ANIMATION_DURATION_MS - elapsed);
+        var remaining = Math.max(
+          0, ANIMATION_DURATION_MS - elapsed
+        );
         appState.revealTimeout = setTimeout(function () {
           resultsContent.classList.add("visible");
         }, remaining);
@@ -233,51 +297,105 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function initCarouselNavigation(appState) {
-    const resultsContainer = document.getElementById("results-container");
+    var resultsContainer =
+      document.getElementById("results-container");
     if (!resultsContainer) return;
 
     document.body.addEventListener("htmx:afterSwap", function (evt) {
       if (evt.detail.target.id !== "results-container") return;
       if (!appState.embla) return;
 
-      const embla = appState.embla;
-      const prevButton = resultsContainer.querySelector(".carousel-arrow-prev");
-      const nextButton = resultsContainer.querySelector(".carousel-arrow-next");
-      const dotsContainer = resultsContainer.querySelector(".carousel-dots");
-      const viewport = resultsContainer.querySelector(".carousel-viewport");
+      var embla = appState.embla;
+      var prevButton = resultsContainer.querySelector(
+        ".carousel-arrow-prev"
+      );
+      var nextButton = resultsContainer.querySelector(
+        ".carousel-arrow-next"
+      );
+      var dotsContainer =
+        resultsContainer.querySelector(".carousel-dots");
+      var viewport =
+        resultsContainer.querySelector(".carousel-viewport");
+      var liveRegion =
+        resultsContainer.querySelector(".carousel-live");
 
       if (!prevButton || !nextButton || !dotsContainer) return;
 
-      const dots = [];
-      const slideCount = embla.scrollSnapList().length;
+      var totalSlides = embla.scrollSnapList().length;
+      var realCount = totalSlides - 2;
+      var dots = [];
 
-      for (let i = 0; i < slideCount; i++) {
-        const dot = document.createElement("button");
+      for (var i = 0; i < realCount; i++) {
+        var dot = document.createElement("button");
         dot.type = "button";
-        dot.className = "carousel-dot" + (i === 0 ? " active" : "");
-        dot.setAttribute("role", "tab");
-        dot.setAttribute("aria-label", "Aller au resultat " + (i + 1) + " de " + slideCount);
-        dot.dataset.index = i;
+        dot.className =
+          "carousel-dot" + (i === 0 ? " active" : "");
+        dot.setAttribute("role", "button");
+        dot.setAttribute(
+          "aria-label",
+          "Aller au resultat " + (i + 1) +
+            " de " + realCount
+        );
+        dot.setAttribute(
+          "aria-pressed", i === 0 ? "true" : "false"
+        );
+        dot.dataset.index = i + 1;
         dotsContainer.appendChild(dot);
         dots.push(dot);
       }
 
+      function announceSlide(realIndex) {
+        if (!liveRegion) return;
+        liveRegion.textContent =
+          "Resultat " + (realIndex + 1) +
+            " de " + realCount;
+      }
+
       function updateNavigation() {
-        const selected = embla.selectedScrollSnap();
-        prevButton.setAttribute("aria-disabled", selected === 0 ? "true" : "false");
-        nextButton.setAttribute("aria-disabled", selected === slideCount - 1 ? "true" : "false");
+        var snap = embla.selectedScrollSnap();
+        if (snap < 1 || snap > realCount) return;
+        var realIndex = snap - 1;
+        prevButton.setAttribute(
+          "aria-disabled",
+          snap <= 1 ? "true" : "false"
+        );
+        nextButton.setAttribute(
+          "aria-disabled",
+          snap >= realCount ? "true" : "false"
+        );
         dots.forEach(function (dot, idx) {
-          dot.classList.toggle("active", idx === selected);
-          dot.setAttribute("aria-selected", idx === selected ? "true" : "false");
+          dot.classList.toggle("active", idx === realIndex);
+          dot.setAttribute(
+            "aria-pressed",
+            idx === realIndex ? "true" : "false"
+          );
         });
+        announceSlide(realIndex);
+      }
+
+      function clampToReal() {
+        var snap = embla.selectedScrollSnap();
+        if (snap < 1) {
+          embla.scrollTo(1, true);
+          return;
+        }
+        if (snap > realCount) {
+          embla.scrollTo(realCount, true);
+          return;
+        }
+        updateNavigation();
       }
 
       prevButton.addEventListener("click", function () {
-        embla.scrollPrev();
+        if (embla.selectedScrollSnap() > 1) {
+          embla.scrollPrev();
+        }
       });
 
       nextButton.addEventListener("click", function () {
-        embla.scrollNext();
+        if (embla.selectedScrollSnap() < realCount) {
+          embla.scrollNext();
+        }
       });
 
       dotsContainer.addEventListener("click", function (evt) {
@@ -291,30 +409,36 @@ document.addEventListener("DOMContentLoaded", function () {
         viewport.addEventListener("keydown", function (evt) {
           if (evt.key === "ArrowLeft") {
             evt.preventDefault();
-            embla.scrollPrev();
+            if (embla.selectedScrollSnap() > 1) {
+              embla.scrollPrev();
+            }
           } else if (evt.key === "ArrowRight") {
             evt.preventDefault();
-            embla.scrollNext();
+            if (embla.selectedScrollSnap() < realCount) {
+              embla.scrollNext();
+            }
           }
         });
       }
 
-      embla.on("select", updateNavigation);
-      updateNavigation();
+      embla.on("select", clampToReal);
+      clampToReal();
     });
   }
 
   function initHistorySidebar(appState) {
-    const toggle = document.querySelector(".sidebar-toggle");
-    const sidebar = document.getElementById("history-sidebar");
-    const backdrop = document.querySelector(".sidebar-backdrop");
-    const openIcon = document.querySelector(".sidebar-toggle-open");
-    const closeIcon = document.querySelector(".sidebar-toggle-close");
+    var toggle = document.querySelector(".sidebar-toggle");
+    var sidebar = document.getElementById("history-sidebar");
+    var backdrop = document.querySelector(".sidebar-backdrop");
+    var openIcon = document.querySelector(".sidebar-toggle-open");
+    var closeIcon =
+      document.querySelector(".sidebar-toggle-close");
     if (!toggle || !sidebar) return;
 
-    function isMobile() {
-      return window.innerWidth < 768;
-    }
+    var focusableSelector =
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    var swipeStartX = null;
+    var SWIPE_THRESHOLD = 60;
 
     function openSidebar() {
       document.body.classList.add("sidebar-open");
@@ -322,8 +446,16 @@ document.addEventListener("DOMContentLoaded", function () {
       toggle.setAttribute("aria-label", "Fermer l'historique");
       if (openIcon) openIcon.classList.add("hidden");
       if (closeIcon) closeIcon.classList.remove("hidden");
-      if (backdrop && isMobile()) backdrop.classList.remove("hidden");
+      if (backdrop && MOBILE_MQ.matches) {
+        backdrop.classList.remove("hidden");
+      }
       appState.sidebarOpen = true;
+
+      if (MOBILE_MQ.matches) {
+        var firstFocusable =
+          sidebar.querySelector(focusableSelector);
+        if (firstFocusable) firstFocusable.focus();
+      }
     }
 
     function closeSidebar() {
@@ -350,18 +482,75 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     document.addEventListener("keydown", function (evt) {
-      if (evt.key === "Escape" && appState.sidebarOpen && isMobile()) {
+      if (
+        evt.key === "Escape" &&
+        appState.sidebarOpen &&
+        MOBILE_MQ.matches
+      ) {
         closeSidebar();
+      }
+
+      if (
+        evt.key === "Tab" &&
+        appState.sidebarOpen &&
+        MOBILE_MQ.matches
+      ) {
+        var focusable =
+          sidebar.querySelectorAll(focusableSelector);
+        if (focusable.length === 0) return;
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+
+        if (evt.shiftKey) {
+          if (
+            document.activeElement === first ||
+            document.activeElement === toggle
+          ) {
+            evt.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            evt.preventDefault();
+            toggle.focus();
+          }
+        }
       }
     });
 
-    const STORAGE_KEY = "bible_search_history";
-    const MAX_ENTRIES = 20;
-    const historyList = sidebar.querySelector(".history-list");
+    sidebar.addEventListener("touchstart", function (evt) {
+      if (!MOBILE_MQ.matches || !appState.sidebarOpen) return;
+      swipeStartX = evt.touches[0].clientX;
+    }, { passive: true });
+
+    sidebar.addEventListener("touchmove", function (evt) {
+      if (swipeStartX === null) return;
+      var deltaX = evt.touches[0].clientX - swipeStartX;
+      if (deltaX < -10) {
+        sidebar.style.transform =
+          "translateX(" + Math.max(deltaX, -280) + "px)";
+      }
+    }, { passive: true });
+
+    sidebar.addEventListener("touchend", function (evt) {
+      if (swipeStartX === null) return;
+      var endX = evt.changedTouches[0].clientX;
+      var deltaX = endX - swipeStartX;
+      swipeStartX = null;
+      sidebar.style.transform = "";
+
+      if (deltaX < -SWIPE_THRESHOLD) {
+        closeSidebar();
+      }
+    }, { passive: true });
+
+    var STORAGE_KEY = "bible_search_history";
+    var MAX_ENTRIES = 20;
+    var historyList = sidebar.querySelector(".history-list");
 
     function loadHistory() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        var raw = localStorage.getItem(STORAGE_KEY);
         return raw ? JSON.parse(raw) : [];
       } catch (e) {
         return [];
@@ -369,25 +558,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function saveHistory(entries) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      localStorage.setItem(
+        STORAGE_KEY, JSON.stringify(entries)
+      );
     }
 
     function addEntry(query) {
-      const entries = loadHistory();
-      const exists = entries.some(function (e) { return e.query === query; });
+      var entries = loadHistory();
+      var exists = entries.some(function (e) {
+        return e.query === query;
+      });
       if (exists) return;
       entries.unshift({
-        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+        id: Date.now().toString(36) +
+          Math.random().toString(36).slice(2, 7),
         query: query,
         timestamp: Date.now()
       });
-      if (entries.length > MAX_ENTRIES) entries.length = MAX_ENTRIES;
+      if (entries.length > MAX_ENTRIES) {
+        entries.length = MAX_ENTRIES;
+      }
       saveHistory(entries);
       renderHistory();
     }
 
     function removeEntry(id) {
-      const entries = loadHistory().filter(function (e) { return e.id !== id; });
+      var entries = loadHistory().filter(function (e) {
+        return e.id !== id;
+      });
       saveHistory(entries);
       renderHistory();
     }
@@ -395,29 +593,34 @@ document.addEventListener("DOMContentLoaded", function () {
     function renderHistory() {
       if (!historyList) return;
       historyList.innerHTML = "";
-      const entries = loadHistory();
+      var entries = loadHistory();
       entries.forEach(function (entry) {
-        const div = document.createElement("div");
+        var div = document.createElement("div");
         div.className = "history-entry";
 
-        const queryBtn = document.createElement("button");
+        var queryBtn = document.createElement("button");
         queryBtn.type = "button";
         queryBtn.className = "history-query";
         queryBtn.textContent = entry.query;
         queryBtn.title = entry.query;
 
-        const deleteBtn = document.createElement("button");
+        var deleteBtn = document.createElement("button");
         deleteBtn.type = "button";
         deleteBtn.className = "history-delete";
-        deleteBtn.setAttribute("aria-label", "Supprimer : " + entry.query);
+        deleteBtn.setAttribute(
+          "aria-label", "Supprimer : " + entry.query
+        );
         deleteBtn.textContent = "\u00d7";
 
         queryBtn.addEventListener("click", function () {
           if (appState.searchBar) {
             appState.searchBar.setValue(entry.query);
-            htmx.trigger(document.getElementById("search-form"), "submit");
+            htmx.trigger(
+              document.getElementById("search-form"),
+              "submit"
+            );
           }
-          if (isMobile()) closeSidebar();
+          if (MOBILE_MQ.matches) closeSidebar();
         });
 
         deleteBtn.addEventListener("click", function () {
@@ -430,21 +633,29 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    document.body.addEventListener("htmx:afterSwap", function (evt) {
-      if (evt.detail.target.id !== "results-container") return;
-      const resultsContainer = document.getElementById("results-container");
-      if (resultsContainer && resultsContainer.querySelector(".carousel-viewport")) {
-        const query = appState.searchBar ? appState.searchBar.getValue() : "";
-        if (query) addEntry(query);
+    document.body.addEventListener(
+      "htmx:afterSwap", function (evt) {
+        if (evt.detail.target.id !== "results-container") return;
+        var resultsContainer =
+          document.getElementById("results-container");
+        if (
+          resultsContainer &&
+          resultsContainer.querySelector(".carousel-viewport")
+        ) {
+          var query = appState.searchBar
+            ? appState.searchBar.getValue()
+            : "";
+          if (query) addEntry(query);
+        }
       }
-    });
+    );
 
     renderHistory();
     appState.sidebar = { open: openSidebar, close: closeSidebar };
   }
 
   function initOfflineDetection() {
-    const banner = document.querySelector(".offline-banner");
+    var banner = document.querySelector(".offline-banner");
     if (!banner) return;
 
     function update() {
@@ -462,6 +673,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   initPageHeader(window.appState);
   initSearchBar(window.appState);
+  initLoadingStates();
   initStatusMessages(window.appState);
   initCarousel(window.appState);
   initCarouselNavigation(window.appState);
