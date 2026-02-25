@@ -14,23 +14,24 @@ Retrieval-Augmented Generation system for the French Bible (AELF translation). U
 
 ## Architecture
 
-1. **Ingestion** (`ingest.py`): reads `bible.db`, filters non-content verses, embeds text with a multilingual sentence transformer, builds a FAISS index + JSON mapping.
-2. **Retrieval** (`retrieve.py`): two-stage search -- FAISS top-K candidates, then cross-encoder reranking for precision.
-3. **Web** (`app.py`): FastAPI backend serving Jinja2 HTML fragments. Static HTMX + Pico CSS frontend.
+1. **Ingestion** (`rag/ingest.py`): reads `bible.db`, filters non-content verses, embeds text with a multilingual sentence transformer, builds a FAISS index + JSON mapping.
+2. **Retrieval** (`rag/retrieve.py`): two-stage search -- FAISS top-K candidates, then cross-encoder reranking for precision.
+3. **Web** (`app.py`): FastAPI backend serving Jinja2 HTML fragments. HTMX frontend with custom design system.
 
 ## Project Structure
 
 ```
-bible.db          # SQLite database with 35,480 French Bible verses
 config.py         # Central configuration (paths, model names, parameters)
-embeddings.py     # Model loading and text encoding
-ingest.py         # Ingestion pipeline: filter, embed, index
-retrieve.py       # Two-stage retrieval: FAISS + cross-encoder rerank
 app.py            # FastAPI application
+rag/              # Core package
+  embeddings.py   # Model loading and text encoding
+  ingest.py       # Ingestion pipeline: filter, embed, index
+  retrieve.py     # Two-stage retrieval: FAISS + cross-encoder rerank
 templates/        # Jinja2 HTML fragments (results, errors)
-static/           # Frontend (index.html with HTMX + Pico CSS)
+static/           # Frontend (index.html, CSS, JS)
 tests/            # Test suite (unit + integration)
 data/             # Generated artifacts (gitignored)
+  bible.db        # SQLite database with 35,480 French Bible verses
   index.faiss     # FAISS vector index
   mapping.json    # Verse metadata mapping
 ```

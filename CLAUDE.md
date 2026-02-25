@@ -37,7 +37,7 @@ Data flow: `bible.db` -> ingest -> `data/{index.faiss, mapping.json}` -> app sta
 
 ## Frontend
 
-Custom design system replacing Pico CSS with warm parchment aesthetic (`#f5f0e8` background, `#2a2a2e` dark cards). No build step -- all vanilla HTML/CSS/JS.
+Custom design system with warm parchment aesthetic (`#f5f0e8` background, `#2a2a2e` dark cards). No build step -- all vanilla HTML/CSS/JS.
 
 - **`static/index.html`** -- single-page HTMX app with semantic HTML, Crimson Text font, offline banner, sidebar toggle, search form
 - **`static/styles.css`** -- CSS custom properties (design tokens) in `:root`, mobile-first responsive, `prefers-reduced-motion` support
