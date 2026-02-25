@@ -2,7 +2,7 @@
 title: RAG Bible
 emoji: "\U0001F4D6"
 colorFrom: yellow
-colorTo: brown
+colorTo: red
 sdk: docker
 app_port: 7860
 pinned: false
