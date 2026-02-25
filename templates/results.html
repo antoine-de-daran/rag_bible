@@ -15,8 +15,8 @@
               <span><strong>{{ r.book_title }}</strong> — {{ r.chapter }}{% if r.verse %}:{{ r.verse }}{% endif %}</span>
               <span class="score-badge
                 {%- if r.pct >= 80 %} score-high
-                {%- elif r.pct >= 60 %} score-mid
-                {%- elif r.pct >= 40 %} score-low
+                {%- elif r.pct >= 50 %} score-mid
+                {%- elif r.pct >= 30 %} score-low
                 {%- else %} score-minimal
                 {%- endif %}">{{ r.label }} ({{ r.pct }}%)</span>
             </div>

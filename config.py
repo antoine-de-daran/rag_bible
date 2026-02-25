@@ -34,10 +34,10 @@ CORS_ORIGINS: list[str] = [
 ]
 RELEVANCE_THRESHOLD: float = 0.0
 SCORE_LABELS: list[tuple[float, str]] = [
-    (0.8, "Tres pertinent"),
+    (0.8, "Très pertinent"),
     (0.5, "Pertinent"),
     (0.3, "Peu pertinent"),
-    (0.0, "Faible pertinence"),
+    (0.0, "Non pertinent"),
 ]
 MAX_QUERY_LENGTH: int = 300
 CONTEXT_VERSES: int = 2

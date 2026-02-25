@@ -22,10 +22,10 @@
   --color-border: #d5cfc4;
 
   /* Score Badges */
-  --color-score-high: #7ba68c;
-  --color-score-mid: #a08060;
-  --color-score-low: #d4896d;
-  --color-score-minimal: #908880;
+  --color-score-high: #7A8B6F;
+  --color-score-mid: #A49768;
+  --color-score-low: #B49E82;
+  --color-score-minimal: #D5CFC6;
 
   /* Feedback */
   --color-feedback-error: #d4896d;
@@ -429,6 +429,7 @@ h1 {
 
 .score-minimal {
   background-color: var(--color-score-minimal);
+  color: var(--color-text-card);
 }
 
 /* --- Context Verses --- */
