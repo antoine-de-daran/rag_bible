@@ -32,7 +32,7 @@ jobs:
 
           # Copy fresh code from GitHub checkout
           cd ..
-          cp Dockerfile pyproject.toml uv.lock config.py app.py hf_space/
+          cp README.md Dockerfile pyproject.toml uv.lock config.py app.py hf_space/
           cp -r rag/ hf_space/rag/
           cp -r templates/ hf_space/templates/
           cp -r static/ hf_space/static/

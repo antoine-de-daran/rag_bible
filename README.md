@@ -1,3 +1,13 @@
+---
+title: RAG Bible
+emoji: "\U0001F4D6"
+colorFrom: yellow
+colorTo: brown
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # RAG Bible
 
 Retrieval-Augmented Generation system for the French Bible (AELF translation). Uses FAISS for vector search and a cross-encoder for reranking, served via FastAPI with an HTMX frontend.
