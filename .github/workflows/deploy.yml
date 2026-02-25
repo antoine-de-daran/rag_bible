@@ -15,6 +15,9 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
+          # Install Git LFS (HF Spaces requires it for files > 10 MiB)
+          git lfs install
+
           # Clone the HF Space repo (contains data/ with large files)
           git clone https://user:$HF_TOKEN@huggingface.co/spaces/adedaran/rag-bible hf_space
 
@@ -38,6 +41,8 @@ jobs:
           cd hf_space
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "GitHub Actions"
+          git lfs track "data/*.faiss" "data/*.json" "data/*.db"
+          git add .gitattributes
           git add .
           git diff --staged --quiet || {
             git commit -m "Deploy from GitHub (${GITHUB_SHA::7})"
