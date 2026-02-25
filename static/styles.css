@@ -7,25 +7,25 @@
 :root {
   /* Backgrounds */
   --color-bg: #f5f0e8;
-  --color-bg-card: #2a2a2e;
+  --color-bg-card: #faf6ef;
   --color-sidebar-bg: #ede8df;
 
   /* Text */
   --color-text: #3a3a3a;
-  --color-text-card: #d4d4d4;
+  --color-text-card: #3d3832;
   --color-text-inverse: #ffffff;
   --color-text-muted: #8a8a8a;
 
   /* Accent & Interactive */
-  --color-accent: #6b8db5;
-  --color-highlight: rgba(107, 141, 181, 0.10);
+  --color-accent: #9c7a5a;
+  --color-highlight: rgba(156, 122, 90, 0.12);
   --color-border: #d5cfc4;
 
   /* Score Badges */
   --color-score-high: #7ba68c;
-  --color-score-mid: #6b8db5;
+  --color-score-mid: #a08060;
   --color-score-low: #d4896d;
-  --color-score-minimal: #777;
+  --color-score-minimal: #908880;
 
   /* Feedback */
   --color-feedback-error: #d4896d;
@@ -377,6 +377,8 @@ h1 {
   background-color: var(--color-bg-card);
   color: var(--color-text-card);
   border-radius: var(--radius-lg);
+  border: 1px solid rgba(156, 122, 90, 0.15);
+  box-shadow: 0 2px 8px rgba(58, 53, 48, 0.06);
   padding: var(--space-md);
   margin-bottom: var(--space-md);
   max-width: var(--card-width);
@@ -441,7 +443,7 @@ h1 {
   font-family: var(--font-scripture);
   font-size: 0.95rem;
   line-height: var(--line-height-scripture);
-  color: var(--color-text-muted);
+  color: #847d74;
 }
 
 .verse-ref {
