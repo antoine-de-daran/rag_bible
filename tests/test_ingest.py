@@ -6,7 +6,7 @@ import pytest
 import config
 
 
-@pytest.mark.unit
+@pytest.mark.integration
 def test_fetch_verses_returns_all_rows() -> None:
     """fetch_verses reads all rows from bible.db."""
     from rag.ingest import fetch_verses
@@ -15,7 +15,7 @@ def test_fetch_verses_returns_all_rows() -> None:
     assert len(verses) == 35480
 
 
-@pytest.mark.unit
+@pytest.mark.integration
 def test_fetch_verses_has_rowid() -> None:
     """Each verse dict includes a rowid key."""
     from rag.ingest import fetch_verses
