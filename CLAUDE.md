@@ -35,6 +35,28 @@ French Bible RAG with two-stage retrieval:
 
 Data flow: `bible.db` -> ingest -> `data/{index.faiss, mapping.json}` -> app startup loads into memory -> HTMX POST `/search` -> HTML fragment response.
 
+## Frontend
+
+Custom design system replacing Pico CSS with warm parchment aesthetic (`#f5f0e8` background, `#2a2a2e` dark cards). No build step -- all vanilla HTML/CSS/JS.
+
+- **`static/index.html`** -- single-page HTMX app with semantic HTML, Crimson Text font, offline banner, sidebar toggle, search form
+- **`static/styles.css`** -- CSS custom properties (design tokens) in `:root`, mobile-first responsive, `prefers-reduced-motion` support
+- **`static/app.js`** -- component initializers inside `DOMContentLoaded`: `initPageHeader`, `initSearchBar`, `initStatusMessages`, `initCarousel`, `initCarouselNavigation`, `initHistorySidebar`, `initOfflineDetection`. Shared state via `window.appState`
+- **`static/service-worker.js`** -- cache-first for static assets, network-only for `/search` API
+- **`templates/results.html`** -- Embla Carousel structure (viewport > track > slides) with score badges and context verses
+- **`templates/error.html`** -- error message with "Reessayer" retry button
+- **`templates/no_results.html`** -- simple no-results feedback
+
+### Frontend Conventions
+
+- JS naming: `camelCase` variables/functions, `initPascalCase` for component initializers, `SCREAMING_SNAKE_CASE` for constants
+- CSS naming: `kebab-case` for component classes (`.search-bar`, `.result-card`), single-word for states (`.active`, `.hidden`)
+- Component pattern: each `initX(appState)` caches DOM refs, attaches listeners, returns public API stored on `appState`
+- Use `const` (never `var`), `aria-disabled` (not `disabled` attribute) for buttons that must allow Enter key submission
+- CDN dependencies: HTMX 2.0.4, Embla Carousel 8.0.0, Google Fonts Crimson Text
+- localStorage key `"bible_search_history"` for search history (max 20 entries)
+- Touch targets: 44px mobile, 40px desktop. All transitions 350ms ease-out
+
 ## Key Conventions
 
 - Embeddings are always L2-normalized; FAISS uses IndexFlatIP (inner product = cosine for normalized vectors)

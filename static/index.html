@@ -46,7 +46,7 @@
 
   <main>
     <form id="search-form" class="search-bar" role="search"
-          hx-post="/search" hx-target="#results-container" hx-indicator="#results-container">
+          hx-post="/search" hx-target="#results-container">
       <input
         type="search"
         name="query"
@@ -66,16 +66,8 @@
           <line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
-      <button type="submit" class="search-button" aria-label="Rechercher" aria-disabled="true">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"/>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-      </button>
     </form>
     <div id="results-container">
-      <div class="indicator" role="status" aria-live="polite"><span class="loading-text">Recherche en cours...</span></div>
       <div id="results-content"></div>
     </div>
   </main>

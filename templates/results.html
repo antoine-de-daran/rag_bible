@@ -1,35 +1,37 @@
-<div class="carousel-wrapper">
-  <button type="button" class="carousel-arrow carousel-arrow-prev" aria-label="Resultat precedent" aria-disabled="true">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <polyline points="15 18 9 12 15 6"/>
-    </svg>
-  </button>
-  <div class="carousel-viewport" role="region" aria-label="Resultats de recherche" aria-live="polite" tabindex="0">
-    <div class="carousel-track">
-      {% for r in results %}
-      <div class="carousel-slide">
-        <div class="result-card">
-          <div class="card-header">
-            <span><strong>{{ r.book_title }}</strong> — {{ r.chapter }}{% if r.verse %}:{{ r.verse }}{% endif %}</span>
-            <span class="score-badge
-              {%- if r.pct >= 80 %} score-high
-              {%- elif r.pct >= 60 %} score-mid
-              {%- elif r.pct >= 40 %} score-low
-              {%- else %} score-minimal
-              {%- endif %}">{{ r.label }} ({{ r.pct }}%)</span>
+<div class="results-content">
+  <div class="carousel-wrapper">
+    <button type="button" class="carousel-arrow carousel-arrow-prev" aria-label="Resultat precedent" aria-disabled="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+    <div class="carousel-viewport" role="region" aria-label="Resultats de recherche" aria-live="polite" tabindex="0">
+      <div class="carousel-track">
+        {% for r in results %}
+        <div class="carousel-slide">
+          <div class="result-card">
+            <div class="card-header">
+              <span><strong>{{ r.book_title }}</strong> — {{ r.chapter }}{% if r.verse %}:{{ r.verse }}{% endif %}</span>
+              <span class="score-badge
+                {%- if r.pct >= 80 %} score-high
+                {%- elif r.pct >= 60 %} score-mid
+                {%- elif r.pct >= 40 %} score-low
+                {%- else %} score-minimal
+                {%- endif %}">{{ r.label }} ({{ r.pct }}%)</span>
+            </div>
+            {% include "context_verses.html" %}
           </div>
-          {% include "context_verses.html" %}
         </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
+    <button type="button" class="carousel-arrow carousel-arrow-next" aria-label="Resultat suivant">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </button>
   </div>
-  <button type="button" class="carousel-arrow carousel-arrow-next" aria-label="Resultat suivant">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <polyline points="9 18 15 12 9 6"/>
-    </svg>
-  </button>
+  <div class="carousel-dots" role="tablist" aria-label="Navigation des resultats"></div>
 </div>
-<div class="carousel-dots" role="tablist" aria-label="Navigation des resultats"></div>

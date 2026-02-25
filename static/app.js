@@ -4,17 +4,108 @@ document.addEventListener("DOMContentLoaded", function () {
   window.appState = {};
 
   function initPageHeader(appState) {
+    const description = document.querySelector(".description");
+    const verseRef = document.querySelector(".verse-ref-header");
+    const header = document.querySelector(".page-header");
+    const body = document.body;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
     document.body.addEventListener("htmx:beforeRequest", function (evt) {
-      if (evt.detail.elt.id === "search-form") {
-        document.body.classList.add("results-active");
-        appState.isResultsActive = true;
+      if (evt.detail.elt.id !== "search-form") return;
+      if (appState.isResultsActive) return;
+
+      appState.isResultsActive = true;
+      appState.resultsActiveTimestamp = Date.now();
+
+      if (reducedMotion.matches) {
+        body.classList.add("results-active");
+        return;
       }
+
+      const descHeight = description.offsetHeight;
+      const descMarginTop = parseFloat(getComputedStyle(description).marginTop);
+      const verseHeight = verseRef.offsetHeight;
+      const verseMarginBottom = parseFloat(getComputedStyle(verseRef).marginBottom);
+      const headerPaddingTop = parseFloat(getComputedStyle(header).paddingTop);
+      const rootFontSize = parseFloat(
+        getComputedStyle(document.documentElement).fontSize
+      );
+      const targetPaddingTop = 0.5 * rootFontSize;
+      const paddingDelta = headerPaddingTop - targetPaddingTop;
+      const bodyPaddingTop = parseFloat(getComputedStyle(body).paddingTop);
+      const spacerBeforeHeight =
+        header.getBoundingClientRect().top -
+        body.getBoundingClientRect().top -
+        bodyPaddingTop;
+
+      body.style.paddingTop = (bodyPaddingTop + spacerBeforeHeight) + "px";
+      body.classList.add("animating");
+
+      const descTotal = descHeight + descMarginTop;
+      const verseTotal = verseHeight + verseMarginBottom;
+      const dockTotal = spacerBeforeHeight + paddingDelta;
+      const totalDistance = descTotal + verseTotal + dockTotal;
+
+      if (totalDistance <= 0) {
+        body.style.paddingTop = "";
+        body.classList.remove("animating");
+        body.classList.add("results-active");
+        return;
+      }
+
+      const startTime = performance.now();
+
+      function frame(now) {
+        const progress = Math.min((now - startTime) / ANIMATION_DURATION_MS, 1);
+        const collapsed = progress * totalDistance;
+
+        if (descTotal > 0) {
+          const descProgress = Math.min(collapsed / descTotal, 1);
+          description.style.opacity = String(1 - descProgress);
+          description.style.maxHeight =
+            (descHeight * (1 - descProgress)) + "px";
+          description.style.marginTop =
+            (descMarginTop * (1 - descProgress)) + "px";
+        }
+
+        const afterDesc = collapsed - descTotal;
+        if (afterDesc > 0 && verseTotal > 0) {
+          const verseProgress = Math.min(afterDesc / verseTotal, 1);
+          verseRef.style.opacity = String(1 - verseProgress);
+          verseRef.style.maxHeight =
+            (verseHeight * (1 - verseProgress)) + "px";
+          verseRef.style.marginBottom =
+            (verseMarginBottom * (1 - verseProgress)) + "px";
+        }
+
+        const afterTextBlocks = collapsed - descTotal - verseTotal;
+        if (afterTextBlocks > 0 && dockTotal > 0) {
+          const dockProgress = Math.min(afterTextBlocks / dockTotal, 1);
+          body.style.paddingTop =
+            (bodyPaddingTop + spacerBeforeHeight * (1 - dockProgress)) + "px";
+          header.style.paddingTop =
+            (headerPaddingTop - paddingDelta * dockProgress) + "px";
+        }
+
+        if (progress >= 1) {
+          description.style.cssText = "";
+          verseRef.style.cssText = "";
+          header.style.cssText = "";
+          body.style.paddingTop = "";
+          body.classList.add("results-active");
+          body.classList.remove("animating");
+          return;
+        }
+
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
     });
   }
 
   function initSearchBar(appState) {
     const input = document.getElementById("query-input");
-    const searchButton = document.querySelector(".search-button");
     const clearButton = document.querySelector(".clear-button");
     if (!input) return;
 
@@ -24,16 +115,41 @@ document.addEventListener("DOMContentLoaded", function () {
       if (clearButton) {
         clearButton.classList.toggle("hidden", !hasContent);
       }
-
-      if (searchButton) {
-        searchButton.setAttribute("aria-disabled", hasContent ? "false" : "true");
-      }
     }
 
     function handleClear() {
       input.value = "";
       updateValidation();
       input.focus();
+
+      if (appState.embla) {
+        appState.embla.destroy();
+        appState.embla = null;
+      }
+
+      const resultsContainer = document.getElementById("results-container");
+      if (!resultsContainer) return;
+
+      const slides = resultsContainer.querySelectorAll(".carousel-slide");
+      slides.forEach(function (slide) {
+        const card = slide.querySelector(".result-card");
+        if (card) {
+          card.style.minHeight = card.offsetHeight + "px";
+          card.innerHTML = "";
+          card.classList.add("result-card--placeholder");
+        }
+      });
+
+      const prevBtn = resultsContainer.querySelector(".carousel-arrow-prev");
+      const nextBtn = resultsContainer.querySelector(".carousel-arrow-next");
+      if (prevBtn) prevBtn.setAttribute("aria-disabled", "true");
+      if (nextBtn) nextBtn.setAttribute("aria-disabled", "true");
+
+      const dots = resultsContainer.querySelectorAll(".carousel-dot");
+      dots.forEach(function (dot) {
+        dot.classList.remove("active");
+        dot.setAttribute("aria-selected", "false");
+      });
     }
 
     input.addEventListener("input", updateValidation);
@@ -76,12 +192,19 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  const ANIMATION_DURATION_MS = 630;
+
   function initCarousel(appState) {
     const resultsContainer = document.getElementById("results-container");
     if (!resultsContainer || typeof EmblaCarousel === "undefined") return;
 
     document.body.addEventListener("htmx:afterSwap", function (evt) {
       if (evt.detail.target.id !== "results-container") return;
+
+      if (appState.revealTimeout) {
+        clearTimeout(appState.revealTimeout);
+        appState.revealTimeout = null;
+      }
 
       if (appState.embla) {
         appState.embla.destroy();
@@ -93,9 +216,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
       appState.embla = EmblaCarousel(viewport, {
         loop: false,
-        align: "center",
-        containScroll: "trimSnaps"
+        align: "center"
       });
+
+      const resultsContent = resultsContainer.querySelector(".results-content");
+      if (resultsContent) {
+        const elapsed = appState.resultsActiveTimestamp
+          ? Date.now() - appState.resultsActiveTimestamp
+          : ANIMATION_DURATION_MS;
+        const remaining = Math.max(0, ANIMATION_DURATION_MS - elapsed);
+        appState.revealTimeout = setTimeout(function () {
+          resultsContent.classList.add("visible");
+        }, remaining);
+      }
     });
   }
 
