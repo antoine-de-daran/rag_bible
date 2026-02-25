@@ -6,9 +6,6 @@ dist/
 build/
 .venv/
 
-# uv
-uv.lock
-
 # Data artifacts (bible.db, FAISS index, mapping)
 data/
 

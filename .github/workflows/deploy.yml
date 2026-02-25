@@ -1,0 +1,45 @@
+name: Deploy to HuggingFace Spaces
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub repo
+        uses: actions/checkout@v4
+
+      - name: Deploy to HuggingFace Spaces
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          # Clone the HF Space repo (contains data/ with large files)
+          git clone https://user:$HF_TOKEN@huggingface.co/spaces/adedaran/rag-bible hf_space
+
+          # Remove old code files (preserve data/ and .git/)
+          cd hf_space
+          find . -maxdepth 1 \
+            ! -name '.' \
+            ! -name '..' \
+            ! -name '.git' \
+            ! -name 'data' \
+            -exec rm -rf {} +
+
+          # Copy fresh code from GitHub checkout
+          cd ..
+          cp Dockerfile pyproject.toml uv.lock config.py app.py hf_space/
+          cp -r rag/ hf_space/rag/
+          cp -r templates/ hf_space/templates/
+          cp -r static/ hf_space/static/
+
+          # Commit and push if there are changes
+          cd hf_space
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "GitHub Actions"
+          git add .
+          git diff --staged --quiet || {
+            git commit -m "Deploy from GitHub (${GITHUB_SHA::7})"
+            git push
+          }
