@@ -66,41 +66,6 @@ def test_filter_verses_keeps_valid(
     assert any("lumière" in t for t in texts)
 
 
-@pytest.mark.unit
-def test_build_mapping_structure(
-    sample_verses: list[dict[str, Any]],
-) -> None:
-    """Mapping entries have all required keys."""
-    from rag.ingest import build_mapping
-
-    mapping = build_mapping(sample_verses)
-    required_keys = {
-        "rowid",
-        "book",
-        "book_id",
-        "book_title",
-        "chapter",
-        "chapter_id",
-        "chapter_title",
-        "verse",
-        "text",
-    }
-    for entry in mapping:
-        assert required_keys <= set(entry.keys())
-
-
-@pytest.mark.unit
-def test_build_mapping_preserves_original_text(
-    sample_verses: list[dict[str, Any]],
-) -> None:
-    """Mapping preserves original text including newlines."""
-    from rag.ingest import build_mapping
-
-    mapping = build_mapping(sample_verses)
-    genesis_1 = next(m for m in mapping if m["rowid"] == 1)
-    assert "\n" in genesis_1["text"]
-
-
 @pytest.mark.integration
 def test_ingest_creates_artifacts(tmp_data_dir: Path) -> None:
     """Full ingestion creates index.faiss and mapping.json with matching sizes."""

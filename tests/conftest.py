@@ -227,3 +227,11 @@ def client(mock_pipeline: None) -> TestClient:
     from app import app as fastapi_app
 
     return TestClient(fastapi_app)
+
+
+@pytest.fixture(scope="session")
+def pipeline() -> tuple:
+    """Load retrieval pipeline once for all integration tests."""
+    from rag.retrieve import load_pipeline
+
+    return load_pipeline()

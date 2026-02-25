@@ -38,9 +38,9 @@ class TestSanitizeQuery:
 @pytest.mark.unit
 class TestGetScoreLabel:
     def test_very_relevant(self) -> None:
-        assert get_score_label(0.85) == "Tres pertinent"
-        assert get_score_label(0.80) == "Tres pertinent"
-        assert get_score_label(1.0) == "Tres pertinent"
+        assert get_score_label(0.85) == "Très pertinent"
+        assert get_score_label(0.80) == "Très pertinent"
+        assert get_score_label(1.0) == "Très pertinent"
 
     def test_relevant(self) -> None:
         assert get_score_label(0.65) == "Pertinent"
@@ -51,8 +51,8 @@ class TestGetScoreLabel:
         assert get_score_label(0.30) == "Peu pertinent"
 
     def test_weak(self) -> None:
-        assert get_score_label(0.25) == "Faible pertinence"
-        assert get_score_label(0.0) == "Faible pertinence"
+        assert get_score_label(0.25) == "Non pertinent"
+        assert get_score_label(0.0) == "Non pertinent"
 
 
 # -- Endpoint tests (mocked pipeline) --
@@ -82,7 +82,7 @@ class TestSearchEndpoint:
     def test_results_contain_score_label(self, client: TestClient) -> None:
         response = client.post("/search", data={"query": "quel est l amour de Dieu"})
         text = response.text
-        assert "Tres pertinent" in text
+        assert "Très pertinent" in text
 
     def test_empty_query_returns_error(self, client: TestClient) -> None:
         response = client.post("/search", data={"query": ""})
@@ -101,7 +101,7 @@ class TestSearchEndpoint:
         response = low_client.post("/search", data={"query": "un deux trois quatre cinq"})
         assert response.status_code == 200
         assert "La Gen" in response.text
-        assert "Faible pertinence" in response.text
+        assert "Non pertinent" in response.text
 
     def test_truncates_long_query(self, client: TestClient) -> None:
         long_query = "mot " * 100

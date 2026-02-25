@@ -28,15 +28,13 @@ def fetch_verses(db_path: Path) -> list[dict[str, Any]]:
     list[dict[str, Any]]
         List of verse dicts with rowid and all column values.
     """
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.execute(
-        "SELECT rowid, book, book_id, book_title, chapter, chapter_id, "
-        "chapter_title, verse, text FROM verses"
-    )
-    verses = [dict(row) for row in cursor.fetchall()]
-    conn.close()
-    return verses
+    with sqlite3.connect(db_path) as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.execute(
+            "SELECT rowid, book, book_id, book_title, chapter, chapter_id, "
+            "chapter_title, verse, text FROM verses"
+        )
+        return [dict(row) for row in cursor.fetchall()]
 
 
 def filter_verses(
@@ -62,35 +60,6 @@ def filter_verses(
     """
     return [
         v for v in verses if len(v["text"]) >= min_length and len(v["text"].split()) >= min_words
-    ]
-
-
-def build_mapping(verses: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Build the verse metadata mapping from filtered verses.
-
-    Parameters
-    ----------
-    verses : list[dict[str, Any]]
-        Filtered verse dicts.
-
-    Returns
-    -------
-    list[dict[str, Any]]
-        Mapping entries preserving all metadata and original text.
-    """
-    return [
-        {
-            "rowid": v["rowid"],
-            "book": v["book"],
-            "book_id": v["book_id"],
-            "book_title": v["book_title"],
-            "chapter": v["chapter"],
-            "chapter_id": v["chapter_id"],
-            "chapter_title": v["chapter_title"],
-            "verse": v["verse"],
-            "text": v["text"],
-        }
-        for v in verses
     ]
 
 
@@ -169,7 +138,9 @@ def main(
     filtered = filter_verses(verses)
     logger.info("After filtering: %d", len(filtered))
 
-    mapping = build_mapping(filtered)
+    # filtered dicts serve as the mapping (schema: rowid, book, book_id,
+    # book_title, chapter, chapter_id, chapter_title, verse, text)
+    mapping = filtered
     texts = [v["text"] for v in filtered]
 
     logger.info("Loading embedding model...")

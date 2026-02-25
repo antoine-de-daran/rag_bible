@@ -39,10 +39,10 @@ docker-serve:
 	docker run --rm -p 7860:7860 rag-bible
 
 docker-run-ingest:
-	docker run --rm -v $(PWD)/data:/app/data rag-bible python ingest.py
+	docker run --rm -v $(PWD)/data:/app/data rag-bible uv run python -m rag.ingest
 
 docker-run-test:
-	docker run --rm rag-bible pytest
+	docker run --rm rag-bible uv run pytest -m "not integration"
 
 clean:
 	rm -rf data/

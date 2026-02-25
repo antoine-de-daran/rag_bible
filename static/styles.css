@@ -29,7 +29,6 @@
 
   /* Feedback */
   --color-feedback-error: #d4896d;
-  --color-feedback-success: #7ba68c;
 
   /* Typography */
   --font-ui: system-ui, -apple-system, sans-serif;
@@ -56,17 +55,13 @@
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
-  --radius-pill: 9999px;
 
   /* Focus */
-  --focus-ring: 0 0 0 2px var(--color-accent);
   --focus-offset: 2px;
 
   /* Transitions */
   --transition-smooth: 500ms cubic-bezier(0.25, 0.1, 0.25, 1);
-  --transition-fade: 1000ms cubic-bezier(0.25, 0.1, 0.25, 1);
   --transition-quick: 150ms ease-out;
-  --transition-fast: 200ms ease-out;
 }
 
 /* --- Reset & Base --- */
@@ -266,14 +261,6 @@ h1 {
   right: var(--space-sm);
   color: var(--color-text-muted);
 }
-
-.word-count-hint {
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-  margin-top: var(--space-xs);
-  text-align: left;
-}
-
 
 /* --- Results Fade-In --- */
 

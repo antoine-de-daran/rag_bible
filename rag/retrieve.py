@@ -93,8 +93,7 @@ def search(
         Top results sorted by normalized score, each with book_title,
         chapter, verse, text, and score.
     """
-    prefixed_query = config.QUERY_PREFIX + query
-    query_clean = prefixed_query.replace("\n", " ")
+    query_clean = query.replace("\n", " ")
 
     query_embedding: np.ndarray = embed_model.encode(
         [query_clean],

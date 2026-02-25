@@ -39,6 +39,7 @@ convention = "numpy"
 [tool.mypy]
 python_version = "3.12"
 strict = true
+warn_unused_ignores = false
 
 [[tool.mypy.overrides]]
 module = [

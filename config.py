@@ -24,9 +24,6 @@ RERANK_TOP_K: int = 5
 MIN_TEXT_LENGTH: int = 10
 MIN_WORD_COUNT: int = 3
 
-# Query prefix (empty for MiniLM, set for bge-m3 later)
-QUERY_PREFIX: str = ""
-
 # Web serving
 _DEFAULT_CORS = "http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000"
 CORS_ORIGINS: list[str] = [
