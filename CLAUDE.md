@@ -68,3 +68,4 @@ Custom design system with warm parchment aesthetic (`#f5f0e8` background, `#2a2a
 - Line length: 100 chars
 - Python 3.12+ (uses `X | Y` union syntax)
 - Docker exposes port 7860 (HuggingFace Spaces default)
+- Version is defined in `pyproject.toml`; also displayed in sidebar (`static/index.html` `.sidebar-version`) -- keep both in sync when bumping
