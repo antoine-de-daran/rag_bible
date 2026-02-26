@@ -10,7 +10,7 @@ from typing import Any
 
 from fastapi import FastAPI, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from markupsafe import Markup
@@ -176,6 +176,15 @@ app.add_middleware(
 )
 
 app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
+
+
+@app.get("/", response_class=HTMLResponse)  # type: ignore[misc]
+def root() -> FileResponse:
+    """Serve the main SPA entry point at the root URL."""
+    return FileResponse(
+        Path(__file__).parent / "static" / "index.html",
+        media_type="text/html",
+    )
 
 
 @app.get("/health")  # type: ignore[misc]
