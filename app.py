@@ -10,7 +10,7 @@ from typing import Any
 
 from fastapi import FastAPI, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from markupsafe import Markup
@@ -185,6 +185,35 @@ def root() -> FileResponse:
         Path(__file__).parent / "static" / "index.html",
         media_type="text/html",
     )
+
+
+_ROBOTS_TXT = """\
+User-agent: *
+Allow: /
+
+Sitemap: https://adedaran-rag-bible.hf.space/sitemap.xml
+"""
+
+_SITEMAP_XML = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://adedaran-rag-bible.hf.space/</loc>
+  </url>
+</urlset>
+"""
+
+
+@app.get("/robots.txt", response_class=PlainTextResponse)  # type: ignore[misc]
+def robots_txt() -> str:
+    """Serve robots.txt for search engine crawlers."""
+    return _ROBOTS_TXT
+
+
+@app.get("/sitemap.xml")  # type: ignore[misc]
+def sitemap_xml() -> Response:
+    """Serve XML sitemap for search engine crawlers."""
+    return Response(content=_SITEMAP_XML, media_type="application/xml")
 
 
 @app.get("/health")  # type: ignore[misc]
