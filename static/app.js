@@ -654,6 +654,24 @@ document.addEventListener("DOMContentLoaded", function () {
     appState.sidebar = { open: openSidebar, close: closeSidebar };
   }
 
+  function initExampleQueries(appState) {
+    var container = document.querySelector(".example-queries");
+    if (!container) return;
+
+    container.addEventListener("click", function (evt) {
+      var btn = evt.target.closest(".example-query");
+      if (!btn || !btn.dataset.query) return;
+
+      if (appState.searchBar) {
+        appState.searchBar.setValue(btn.dataset.query);
+        htmx.trigger(
+          document.getElementById("search-form"),
+          "submit"
+        );
+      }
+    });
+  }
+
   function initOfflineDetection() {
     var banner = document.querySelector(".offline-banner");
     if (!banner) return;
@@ -678,6 +696,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initCarousel(window.appState);
   initCarouselNavigation(window.appState);
   initHistorySidebar(window.appState);
+  initExampleQueries(window.appState);
   initOfflineDetection();
 
   if ("serviceWorker" in navigator) {

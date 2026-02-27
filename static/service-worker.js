@@ -1,4 +1,4 @@
-var CACHE_NAME = "rag-bible-v3";
+var CACHE_NAME = "rag-bible-v4";
 var CACHE_FILES = [
   "/static/index.html",
   "/static/styles.css",

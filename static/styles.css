@@ -711,6 +711,79 @@ textarea:focus-visible {
   outline-offset: var(--focus-offset);
 }
 
+/* --- SEO Content Section --- */
+
+.seo-content {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: var(--space-xl) auto 0;
+  padding: 0 var(--space-md);
+}
+
+.results-active .seo-content {
+  display: none;
+}
+
+.seo-content-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-lg);
+}
+
+.seo-heading {
+  font-family: var(--font-scripture);
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+}
+
+.seo-subheading {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+}
+
+.seo-description {
+  font-family: var(--font-ui);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text);
+  margin-bottom: var(--space-lg);
+}
+
+.example-queries {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.example-query {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target-desktop);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  color: var(--color-accent);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color var(--transition-quick),
+              border-color var(--transition-quick);
+}
+
+.example-query:hover {
+  background: var(--color-highlight);
+  border-color: var(--color-accent);
+}
+
 /* --- Reduced Motion --- */
 
 @media (prefers-reduced-motion: reduce) {
@@ -744,6 +817,11 @@ textarea:focus-visible {
     width: var(--touch-target-mobile);
     height: var(--touch-target-mobile);
   }
+
+  .example-query {
+    min-height: var(--touch-target-mobile);
+  }
+
 }
 
 /* --- Responsive: Tablet (768px+) --- */
@@ -775,6 +853,10 @@ textarea:focus-visible {
 
   .carousel-wrapper {
     max-width: calc(var(--card-width) + 380px);
+  }
+
+  .seo-content-inner {
+    max-width: 700px;
   }
 }
 

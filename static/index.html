@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <meta name="description" content="Recherche semantique dans la Bible. Posez une question et trouvez les versets les plus pertinents.">
+  <meta name="description" content="Recherche sémantique dans la Bible. Décrivez un thème, une situation ou un passage biblique pour trouver les versets les plus pertinents.">
   <meta name="theme-color" content="#f5f0e8">
   <meta name="color-scheme" content="light">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,13 +11,13 @@
   <meta name="apple-mobile-web-app-title" content="Sondez les Ecritures">
   <link rel="canonical" href="https://adedaran-rag-bible.hf.space/">
   <meta property="og:title" content="Sondez les Écritures — Recherche sémantique Bible">
-  <meta property="og:description" content="Recherche sémantique dans la Bible. Posez une question et trouvez les versets les plus pertinents.">
+  <meta property="og:description" content="Recherche sémantique dans la Bible. Décrivez un thème, une situation ou un passage biblique pour trouver les versets les plus pertinents.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://adedaran-rag-bible.hf.space/">
   <meta property="og:locale" content="fr_FR">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Sondez les Écritures — Recherche sémantique Bible">
-  <meta name="twitter:description" content="Recherche sémantique dans la Bible. Trouvez les versets les plus pertinents.">
+  <meta name="twitter:description" content="Recherche sémantique dans la Bible. Décrivez un thème, une situation ou un passage biblique pour trouver les versets les plus pertinents.">
   <title>Sondez les Écritures — Recherche sémantique dans la Bible</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="/static/manifest.json">
@@ -60,7 +60,7 @@
   <header class="page-header" aria-label="Sondez les Écritures - Recherche sémantique">
     <h1>« Sondez les Écritures »</h1>
     <p class="verse-ref-header"><em>Jean 5:39</em></p>
-    <p class="description">Posez une question sur la Bible et trouvez les versets les plus pertinents.</p>
+    <p class="description">Décrivez un thème, une situation ou un passage biblique pour trouver les versets les plus pertinents.</p>
   </header>
 
   <main>
@@ -71,7 +71,7 @@
         name="query"
         id="query-input"
         class="search-input"
-        placeholder="Recherchez dans la Bible..."
+        placeholder="Ex : la paix dans les épreuves..."
         aria-label="Rechercher dans la Bible"
         inputmode="search"
         autocomplete="off"
@@ -91,6 +91,36 @@
       <div id="results-content"></div>
     </div>
   </main>
+
+  <section class="seo-content" aria-label="À propos">
+    <div class="seo-content-inner">
+      <h2 class="seo-heading">Recherche sémantique dans la Bible</h2>
+      <p class="seo-description">
+        <strong>Sondez les Écritures</strong> est un moteur de recherche
+        sémantique pour la Bible. Contrairement à une recherche par
+        mots-clés, il comprend le <em>sens</em> de votre recherche et trouve
+        les versets les plus pertinents parmi plus de
+        <strong>35 000 versets</strong> couvrant les
+        <strong>73 livres</strong> de l'Ancien et du Nouveau Testament,
+        dans la traduction liturgique officielle en français (AELF).
+      </p>
+      <h3 class="seo-subheading">Exemples de recherches</h3>
+      <div class="example-queries" role="list">
+        <button type="button" class="example-query" role="listitem"
+                data-query="Jésus prit le pain et dit">Jésus prit le pain et dit</button>
+        <button type="button" class="example-query" role="listitem"
+                data-query="Le pardon des offenses">Le pardon des offenses</button>
+        <button type="button" class="example-query" role="listitem"
+                data-query="La résurrection du Christ">La résurrection du Christ</button>
+        <button type="button" class="example-query" role="listitem"
+                data-query="Soutien lors des épreuves">Soutien lors des épreuves</button>
+        <button type="button" class="example-query" role="listitem"
+                data-query="Expression de l'amour maternel">Expression de l'amour maternel</button>
+        <button type="button" class="example-query" role="listitem"
+                data-query="Moïse et Aaron contre Pharaon">Moïse et Aaron contre Pharaon</button>
+      </div>
+    </div>
+  </section>
 
   <div hx-get="/health" hx-trigger="load" hx-swap="none" style="display:none;"></div>
 
