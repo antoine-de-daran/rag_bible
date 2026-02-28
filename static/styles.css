@@ -132,7 +132,6 @@ body {
   opacity: 0;
 }
 
-
 @keyframes scroll-hint-bob {
   0%, 100% { transform: translateX(-50%) translateY(0); }
   50% { transform: translateX(-50%) translateY(6px); }
@@ -257,7 +256,6 @@ h1 {
   flex-grow: 0 !important;
 }
 
-
 /* --- Results-Active State (final docked position) --- */
 
 .results-active .description {
@@ -274,6 +272,7 @@ h1 {
 }
 
 .results-active .hero-section {
+  max-height: 100vh;
   max-height: 100dvh;
   padding-bottom: calc(var(--space-lg) + 20px);
 }
@@ -793,7 +792,6 @@ textarea:focus-visible {
   background-color: var(--color-bg-alt);
   border-radius: var(--radius-lg);
 }
-
 
 .seo-content-inner {
   max-width: 640px;
