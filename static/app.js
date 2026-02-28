@@ -679,10 +679,11 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!hint) return;
 
     function onScroll() {
-      if (window.scrollY > 50) {
+      var atBottom = window.innerHeight + window.scrollY
+        >= document.body.scrollHeight - 2;
+      if (atBottom) {
         hint.classList.add("faded");
-      } else {
-        hint.classList.remove("faded");
+        window.removeEventListener("scroll", onScroll);
       }
     }
 
