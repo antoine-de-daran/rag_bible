@@ -70,7 +70,7 @@
 
   <div class="hero-section">
   <header class="page-header" aria-label="Sondez les Écritures - Recherche sémantique">
-    <h1>« Sondez les Écritures »</h1>
+    <h1><a href="/static/index.html" class="home-link">« Sondez les Écritures »</a></h1>
     <p class="verse-ref-header"><em>Jean 5:39</em></p>
     <p class="description">Décrivez un thème, une situation ou un passage biblique pour trouver les versets les plus pertinents.</p>
   </header>
@@ -103,6 +103,13 @@
       <div id="results-content"></div>
     </div>
   </main>
+  <div class="scroll-hint" aria-hidden="true">
+    <svg width="20" height="12" viewBox="0 0 20 12" fill="none"
+         stroke="currentColor" stroke-width="1.5"
+         stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="2,2 10,10 18,2"/>
+    </svg>
+  </div>
   </div>
 
   <section class="seo-content" aria-label="À propos">
@@ -132,6 +139,11 @@
         <button type="button" class="example-query" role="listitem"
                 data-query="Moïse et Aaron contre Pharaon">Moïse et Aaron contre Pharaon</button>
       </div>
+      <p class="github-link">
+        Librement re&ccedil;u, librement partag&eacute; &mdash;
+        <a href="https://github.com/antoine-de-daran/rag_bible"
+           target="_blank" rel="noopener noreferrer">open source sur GitHub</a>
+      </p>
     </div>
   </section>
 

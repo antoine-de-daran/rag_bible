@@ -26,3 +26,6 @@ _bmad-output/
 
 # Claude
 .claude/
+
+# Project notes
+TODO.md

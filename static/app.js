@@ -662,6 +662,8 @@ document.addEventListener("DOMContentLoaded", function () {
       var btn = evt.target.closest(".example-query");
       if (!btn || !btn.dataset.query) return;
 
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
       if (appState.searchBar) {
         appState.searchBar.setValue(btn.dataset.query);
         htmx.trigger(
@@ -670,6 +672,21 @@ document.addEventListener("DOMContentLoaded", function () {
         );
       }
     });
+  }
+
+  function initScrollHint() {
+    var hint = document.querySelector(".scroll-hint");
+    if (!hint) return;
+
+    function onScroll() {
+      if (window.scrollY > 50) {
+        hint.classList.add("faded");
+      } else {
+        hint.classList.remove("faded");
+      }
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
   }
 
   function initOfflineDetection() {
@@ -697,6 +714,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initCarouselNavigation(window.appState);
   initHistorySidebar(window.appState);
   initExampleQueries(window.appState);
+  initScrollHint();
   initOfflineDetection();
 
   if ("serviceWorker" in navigator) {
