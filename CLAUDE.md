@@ -21,7 +21,7 @@ make format           # auto-fix ruff format + lint
 
 Run a single test: `uv run pytest tests/test_app.py::test_name -v`
 
-The frontend is at `http://localhost:8000/static/index.html` (not the root `/`).
+The frontend is at `http://localhost:8000/` (root URL serves `static/index.html`).
 
 ## Architecture
 
@@ -31,15 +31,15 @@ French Bible RAG with two-stage retrieval:
 2. **`rag/ingest.py`** -- ingestion pipeline: reads `bible.db` SQLite, filters short/non-content verses, encodes with SentenceTransformer, builds FAISS IndexFlatIP, writes `data/index.faiss` + `data/mapping.json`
 3. **`rag/retrieve.py`** -- two-stage search: FAISS top-K (cosine via inner product on L2-normalized vectors), then cross-encoder reranking with sigmoid score normalization
 4. **`config.py`** -- all tunable parameters (paths, model names, thresholds, retrieval K values)
-5. **`app.py`** -- FastAPI server: loads pipeline once at startup via lifespan, serves Jinja2 HTML fragments to HTMX frontend. Query sanitization, input validation, contextual verse display with surrounding verses bounded by book_id
+5. **`app.py`** -- FastAPI server: loads pipeline once at startup via lifespan, serves Jinja2 HTML fragments to HTMX frontend. Query sanitization, input validation, contextual verse display with surrounding verses bounded by book_id. Root URL serves SPA, SEO routes (`/robots.txt`, `/sitemap.xml`), static asset cache middleware (24h)
 
-Data flow: `bible.db` -> ingest -> `data/{index.faiss, mapping.json}` -> app startup loads into memory -> HTMX POST `/search` -> HTML fragment response.
+Data flow: `bible.db` -> ingest -> `data/{index.faiss, mapping.json}` -> app startup loads into memory -> HTMX POST `/search` -> HTML fragment response. Root `/` serves the SPA entry point.
 
 ## Frontend
 
 Custom design system with warm parchment aesthetic (`#f5f0e8` background, `#2a2a2e` dark cards). No build step -- all vanilla HTML/CSS/JS.
 
-- **`static/index.html`** -- single-page HTMX app with semantic HTML, Crimson Text font, offline banner, sidebar toggle, search form
+- **`static/index.html`** -- single-page HTMX app with semantic HTML, Crimson Text font, offline banner, sidebar toggle, search form, JSON-LD structured data, OG/Twitter meta tags, inline SVG favicon, example queries section
 - **`static/styles.css`** -- CSS custom properties (design tokens) in `:root`, mobile-first responsive, `prefers-reduced-motion` support
 - **`static/app.js`** -- component initializers inside `DOMContentLoaded`: `initPageHeader`, `initSearchBar`, `initStatusMessages`, `initCarousel`, `initCarouselNavigation`, `initHistorySidebar`, `initOfflineDetection`. Shared state via `window.appState`
 - **`static/service-worker.js`** -- cache-first for static assets, network-only for `/search` API

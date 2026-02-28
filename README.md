@@ -16,7 +16,7 @@ Retrieval-Augmented Generation system for the French Bible (AELF translation). U
 
 1. **Ingestion** (`rag/ingest.py`): reads `bible.db`, filters non-content verses, embeds text with a multilingual sentence transformer, builds a FAISS index + JSON mapping.
 2. **Retrieval** (`rag/retrieve.py`): two-stage search -- FAISS top-K candidates, then cross-encoder reranking for precision.
-3. **Web** (`app.py`): FastAPI backend serving Jinja2 HTML fragments. HTMX frontend with custom design system.
+3. **Web** (`app.py`): FastAPI backend serving Jinja2 HTML fragments. HTMX frontend with custom design system (warm parchment aesthetic). Includes SEO routes (`/robots.txt`, `/sitemap.xml`), JSON-LD structured data, Open Graph/Twitter meta tags, and static asset caching middleware.
 
 ## Project Structure
 
@@ -28,7 +28,7 @@ rag/              # Core package
   ingest.py       # Ingestion pipeline: filter, embed, index
   retrieve.py     # Two-stage retrieval: FAISS + cross-encoder rerank
 templates/        # Jinja2 HTML fragments (results, errors)
-static/           # Frontend (index.html, CSS, JS)
+static/           # Frontend (index.html, CSS, JS, service worker)
 tests/            # Test suite (unit + integration)
 data/             # Generated artifacts (gitignored)
   bible.db        # SQLite database with 35,480 French Bible verses
@@ -49,12 +49,15 @@ make ingest       # build FAISS index from bible.db (~1 min)
 make serve        # start dev server at http://localhost:8000
 ```
 
-Open `http://localhost:8000/static/index.html` in your browser.
+Open `http://localhost:8000` in your browser.
 
 ## API Endpoints
 
+- `GET /` -- serves the main SPA entry point
 - `GET /health` -- health check, returns `{"status": "ok"}`
 - `POST /search` -- accepts `query` form field, returns HTML fragment
+- `GET /robots.txt` -- robots.txt for search engine crawlers
+- `GET /sitemap.xml` -- XML sitemap for search engine crawlers
 
 ## Testing
 
