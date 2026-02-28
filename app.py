@@ -14,6 +14,8 @@ from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse, Res
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from markupsafe import Markup
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.responses import Response as StarletteResponse
 
 import config
 from rag.retrieve import load_pipeline as _load_pipeline
@@ -174,6 +176,22 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+class StaticCacheMiddleware(BaseHTTPMiddleware):  # type: ignore[misc]
+    """Add Cache-Control headers to static asset responses."""
+
+    async def dispatch(  # type: ignore[override]
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> StarletteResponse:
+        """Set Cache-Control on /static/ responses."""
+        response = await call_next(request)
+        if request.url.path.startswith("/static/"):
+            response.headers["Cache-Control"] = "public, max-age=86400"
+        return response
+
+
+app.add_middleware(StaticCacheMiddleware)
 
 app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
 
