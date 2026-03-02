@@ -203,7 +203,7 @@ h1 {
   line-height: var(--line-height-base);
   color: var(--color-text);
   margin-top: var(--space-xs);
-  max-height: 4em;
+  max-height: 8em;
   opacity: 1;
   overflow: hidden;
 }
