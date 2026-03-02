@@ -10,7 +10,13 @@ from typing import Any
 
 from fastapi import FastAPI, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse, Response
+from fastapi.responses import (
+    FileResponse,
+    HTMLResponse,
+    PlainTextResponse,
+    RedirectResponse,
+    Response,
+)
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from markupsafe import Markup
@@ -178,6 +184,21 @@ app.add_middleware(
 )
 
 
+class HFRedirectMiddleware(BaseHTTPMiddleware):  # type: ignore[misc]
+    """Redirect direct HF Space visits to the custom domain."""
+
+    async def dispatch(  # type: ignore[override]
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> StarletteResponse:
+        """Redirect if accessed directly via hf.space."""
+        host = request.headers.get("host", "")
+        has_proxy_tag = request.headers.get("x-original-host", "")
+        if "hf.space" in host and not has_proxy_tag:
+            url = f"https://recherche-biblique.com{request.url.path}"
+            return RedirectResponse(url, status_code=301)
+        return await call_next(request)
+
+
 class StaticCacheMiddleware(BaseHTTPMiddleware):  # type: ignore[misc]
     """Add Cache-Control headers to static asset responses."""
 
@@ -191,6 +212,7 @@ class StaticCacheMiddleware(BaseHTTPMiddleware):  # type: ignore[misc]
         return response
 
 
+app.add_middleware(HFRedirectMiddleware)
 app.add_middleware(StaticCacheMiddleware)
 
 app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
@@ -209,14 +231,14 @@ _ROBOTS_TXT = """\
 User-agent: *
 Allow: /
 
-Sitemap: https://adedaran-rag-bible.hf.space/sitemap.xml
+Sitemap: https://recherche-biblique.com/sitemap.xml
 """
 
 _SITEMAP_XML = """\
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://adedaran-rag-bible.hf.space/</loc>
+    <loc>https://recherche-biblique.com/</loc>
   </url>
 </urlset>
 """

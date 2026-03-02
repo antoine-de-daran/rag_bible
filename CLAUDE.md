@@ -31,7 +31,7 @@ French Bible RAG with two-stage retrieval:
 2. **`rag/ingest.py`** -- ingestion pipeline: reads `bible.db` SQLite, filters short/non-content verses, encodes with SentenceTransformer, builds FAISS IndexFlatIP, writes `data/index.faiss` + `data/mapping.json`
 3. **`rag/retrieve.py`** -- two-stage search: FAISS top-K (cosine via inner product on L2-normalized vectors), then cross-encoder reranking with sigmoid score normalization
 4. **`config.py`** -- all tunable parameters (paths, model names, thresholds, retrieval K values)
-5. **`app.py`** -- FastAPI server: loads pipeline once at startup via lifespan, serves Jinja2 HTML fragments to HTMX frontend. Query sanitization, input validation, contextual verse display with surrounding verses bounded by book_id. Root URL serves SPA, SEO routes (`/robots.txt`, `/sitemap.xml`), static asset cache middleware (24h)
+5. **`app.py`** -- FastAPI server: loads pipeline once at startup via lifespan, serves Jinja2 HTML fragments to HTMX frontend. Query sanitization, input validation, contextual verse display with surrounding verses bounded by book_id. Root URL serves SPA, SEO routes (`/robots.txt`, `/sitemap.xml`), static asset cache middleware (24h), HF-to-custom-domain redirect middleware
 
 Data flow: `bible.db` -> ingest -> `data/{index.faiss, mapping.json}` -> app startup loads into memory -> HTMX POST `/search` -> HTML fragment response. Root `/` serves the SPA entry point.
 
@@ -67,5 +67,7 @@ Custom design system with warm parchment aesthetic (`#f5f0e8` background, `#2a2a
 - Docstrings follow numpy convention
 - Line length: 100 chars
 - Python 3.12+ (uses `X | Y` union syntax)
+- Custom domain: `recherche-biblique.com` via Cloudflare Worker reverse proxy to HF Spaces
+- HFRedirectMiddleware in `app.py` redirects direct `hf.space` visits to custom domain (uses `X-Original-Host` header to distinguish proxy vs direct traffic)
 - Docker exposes port 7860 (HuggingFace Spaces default)
 - Version is defined in `pyproject.toml`; also displayed in sidebar (`static/index.html` `.sidebar-version`) -- keep both in sync when bumping
