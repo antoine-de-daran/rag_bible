@@ -41,7 +41,7 @@ Custom design system with warm parchment aesthetic (`#f5f0e8` background, `#2a2a
 
 - **`static/index.html`** -- single-page HTMX app with semantic HTML, Crimson Text font, offline banner, sidebar toggle, search form, JSON-LD structured data, OG/Twitter meta tags, inline SVG favicon, example queries section
 - **`static/styles.css`** -- CSS custom properties (design tokens) in `:root`, mobile-first responsive, `prefers-reduced-motion` support
-- **`static/app.js`** -- component initializers inside `DOMContentLoaded`: `initPageHeader`, `initSearchBar`, `initStatusMessages`, `initCarousel`, `initCarouselNavigation`, `initHistorySidebar`, `initOfflineDetection`. Shared state via `window.appState`
+- **`static/app.js`** -- component initializers inside `DOMContentLoaded`: `initPageHeader`, `initSearchBar`, `initStatusMessages`, `initCarousel`, `initCarouselNavigation`, `initHistorySidebar`, `initExampleQueries`, `initScrollHint`, `initHamburgerScroll`, `initOfflineDetection`. Shared state via `window.appState`
 - **`static/service-worker.js`** -- cache-first for static assets, network-only for `/search` API
 - **`templates/results.html`** -- Embla Carousel structure (viewport > track > slides) with score badges and context verses
 - **`templates/loading.html`** -- loading state with HTMX `hx-trigger="load delay:2s"` auto-retry
