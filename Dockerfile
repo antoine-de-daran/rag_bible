@@ -7,8 +7,15 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
-COPY config.py app.py ./
+COPY config.py ./
 COPY rag/ rag/
+
+# Pre-export ONNX models at build time (cached in image layer)
+RUN uv run python -c "\
+from rag.embeddings import load_embedding_model, load_cross_encoder; \
+load_embedding_model(); load_cross_encoder()"
+
+COPY app.py ./
 COPY templates/ templates/
 COPY static/ static/
 COPY data/ data/

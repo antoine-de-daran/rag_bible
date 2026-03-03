@@ -20,7 +20,7 @@ def load_embedding_model(model_name: str | None = None) -> SentenceTransformer:
         Loaded embedding model.
     """
     name = model_name or config.EMBEDDING_MODEL
-    return SentenceTransformer(name)
+    return SentenceTransformer(name, backend="onnx")
 
 
 def encode_texts(
@@ -71,5 +71,5 @@ def load_cross_encoder(model_name: str | None = None) -> CrossEncoder:
         Loaded cross-encoder model.
     """
     name = model_name or config.CROSS_ENCODER_MODEL
-    model: CrossEncoder = CrossEncoder(name)
+    model: CrossEncoder = CrossEncoder(name, backend="onnx")
     return model

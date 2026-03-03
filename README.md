@@ -6,6 +6,10 @@ colorTo: red
 sdk: docker
 app_port: 7860
 pinned: false
+preload_from_hub:
+  - sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  - cross-encoder/mmarco-mMiniLMv2-L12-H384-v1
+startup_duration_timeout: 5m
 ---
 
 <!-- HuggingFace Spaces frontmatter above -- do not remove -->
@@ -114,7 +118,7 @@ flowchart LR
     subgraph offline ["Offline (Ingestion)"]
         direction LR
         DB[(bible.db)] --> F[Filter verses]
-        F --> E[SentenceTransformer\nencode]
+        F --> E["SentenceTransformer<br/>encode"]
         E --> IDX[FAISS Index]
         E --> MAP[mapping.json]
     end
@@ -124,9 +128,9 @@ flowchart LR
         Q[User query] --> S[Sanitize]
         S --> EQ[Encode query]
         EQ --> FK[FAISS top-K]
-        FK --> CR[Cross-encoder\nrerank]
+        FK --> CR["Cross-encoder<br/>rerank"]
         CR --> CTX[Context verses]
-        CTX --> HTML[HTMX HTML\nfragment]
+        CTX --> HTML["HTMX HTML<br/>fragment"]
     end
 
     IDX -.-> FK
