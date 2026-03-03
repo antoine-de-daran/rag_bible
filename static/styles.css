@@ -901,6 +901,10 @@ textarea:focus-visible {
 /* --- Responsive: Mobile (up to 767px) --- */
 
 @media (max-width: 767px) {
+  .results-active .page-header {
+    padding-top: calc(var(--touch-target-mobile) + var(--space-sm));
+  }
+
   .clear-button {
     width: var(--touch-target-mobile);
     height: var(--touch-target-mobile);

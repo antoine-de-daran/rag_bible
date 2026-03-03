@@ -695,59 +695,6 @@ document.addEventListener("DOMContentLoaded", function () {
     window.addEventListener("scroll", onScroll, { passive: true });
   }
 
-  function initHamburgerScroll(appState) {
-    var toggle = document.querySelector(".sidebar-toggle");
-    var title = document.querySelector(".page-header h1");
-    if (!toggle || !title || !MOBILE_MQ.matches) return;
-
-    var isHidden = false;
-
-    function checkOverlap() {
-      if (!MOBILE_MQ.matches) {
-        if (isHidden) {
-          toggle.style.opacity = "";
-          toggle.style.pointerEvents = "";
-          isHidden = false;
-        }
-        return;
-      }
-
-      if (appState.sidebarOpen) {
-        if (isHidden) {
-          toggle.style.opacity = "";
-          toggle.style.pointerEvents = "";
-          isHidden = false;
-        }
-        return;
-      }
-
-      var titleRect = title.getBoundingClientRect();
-      var toggleRect = toggle.getBoundingClientRect();
-      var overlaps = titleRect.top < toggleRect.bottom
-        && titleRect.bottom > toggleRect.top;
-
-      if (overlaps && !isHidden) {
-        toggle.style.opacity = "0";
-        toggle.style.pointerEvents = "none";
-        isHidden = true;
-      } else if (!overlaps && isHidden) {
-        toggle.style.opacity = "";
-        toggle.style.pointerEvents = "";
-        isHidden = false;
-      }
-    }
-
-    window.addEventListener("scroll", checkOverlap, { passive: true });
-    MOBILE_MQ.addEventListener("change", checkOverlap);
-
-    var observer = new MutationObserver(checkOverlap);
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["class"]
-    });
-
-    checkOverlap();
-  }
 
   function initOfflineDetection() {
     var banner = document.querySelector(".offline-banner");
@@ -775,7 +722,6 @@ document.addEventListener("DOMContentLoaded", function () {
   initHistorySidebar(window.appState);
   initExampleQueries(window.appState);
   initScrollHint();
-  initHamburgerScroll(window.appState);
   initOfflineDetection();
 
   if ("serviceWorker" in navigator) {
