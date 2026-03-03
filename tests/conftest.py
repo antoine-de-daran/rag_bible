@@ -202,8 +202,13 @@ def _mock_context(result: dict[str, Any], *_args: Any, **_kwargs: Any) -> list[d
 @pytest.fixture
 def mock_pipeline() -> Generator[None, None, None]:
     """Patch app pipeline so no models are loaded."""
+    import threading
+
+    ready = threading.Event()
+    ready.set()
     with (
         patch("app.pipeline", {"loaded": True, "mapping": [], "verse_index": {}}),
+        patch("app.pipeline_ready", ready),
         patch("app._run_search", side_effect=lambda q: _mock_search_results(relevant=True)),
         patch("app.get_verse_context", side_effect=_mock_context),
     ):
@@ -213,10 +218,28 @@ def mock_pipeline() -> Generator[None, None, None]:
 @pytest.fixture
 def mock_pipeline_low_scores() -> Generator[None, None, None]:
     """Patch app pipeline with only low-score results."""
+    import threading
+
+    ready = threading.Event()
+    ready.set()
     with (
         patch("app.pipeline", {"loaded": True, "mapping": [], "verse_index": {}}),
+        patch("app.pipeline_ready", ready),
         patch("app._run_search", side_effect=lambda q: _mock_search_results(relevant=False)),
         patch("app.get_verse_context", side_effect=_mock_context),
+    ):
+        yield
+
+
+@pytest.fixture
+def mock_pipeline_loading() -> Generator[None, None, None]:
+    """Patch app pipeline in loading state (not ready)."""
+    import threading
+
+    not_ready = threading.Event()  # not set = still loading
+    with (
+        patch("app.pipeline", {}),
+        patch("app.pipeline_ready", not_ready),
     ):
         yield
 

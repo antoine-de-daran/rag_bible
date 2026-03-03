@@ -74,6 +74,7 @@ The entire system runs locally with no external API calls, no paid dependencies,
 - **Semantic search** -- find verses by meaning, not just keywords
 - **Two-stage retrieval** -- FAISS vector search for recall, cross-encoder reranking for precision
 - **Contextual results** -- each match includes surrounding verses for readable context
+- **Instant startup** -- background pipeline loading; UI available in < 1s, search auto-retries until models are ready
 - **Fast** -- sub-2s response times on CPU
 - **35,000+ verses** -- complete French Bible (AELF translation)
 - **PWA-ready** -- offline support via service worker, installable on mobile
@@ -107,7 +108,7 @@ Open [http://localhost:8000](http://localhost:8000) in your browser.
 |--------|----------------|------------------------------------------|
 | GET    | `/`            | Main SPA entry point                     |
 | POST   | `/search`      | Search (accepts `query` form field, returns HTML fragment) |
-| GET    | `/health`      | Health check (`{"status": "ok"}`)        |
+| GET    | `/health`      | Health check (200 `ok` or 503 `loading`) |
 | GET    | `/robots.txt`  | Robots.txt for crawlers                  |
 | GET    | `/sitemap.xml` | XML sitemap for crawlers                 |
 
@@ -145,15 +146,17 @@ flowchart LR
 
 ```
 config.py           # Central configuration (paths, models, thresholds)
-app.py              # FastAPI application + lifespan setup
+app.py              # FastAPI application + background pipeline loading
 rag/                # Core package
   embeddings.py     #   Model loading and text encoding
   ingest.py         #   Ingestion: filter, embed, index
   retrieve.py       #   Two-stage retrieval: FAISS + cross-encoder
-templates/          # Jinja2 HTML fragments
-  results.html      #   Search results (Embla Carousel)
-  error.html        #   Error display
-  no_results.html   #   No results feedback
+templates/              # Jinja2 HTML fragments
+  results.html          #   Search results (Embla Carousel)
+  context_verses.html   #   Surrounding context verses
+  loading.html          #   Loading state with HTMX auto-retry
+  error.html            #   Error display
+  no_results.html       #   No results feedback
 static/             # Frontend assets (no build step)
   index.html        #   SPA entry point (HTMX)
   styles.css        #   Design system (CSS custom properties)
@@ -175,6 +178,7 @@ data/               # Generated artifacts (gitignored)
 |-----------------|------------------------------------------------------|---------------------------------------|
 | Embeddings      | `paraphrase-multilingual-MiniLM-L12-v2`             | 384-dim multilingual sentence encoder |
 | Reranker        | `mmarco-mMiniLMv2-L12-H384-v1`                      | Cross-encoder for precision reranking |
+| Inference       | ONNX Runtime                                         | Optimized CPU inference backend       |
 | Vector index    | FAISS (`IndexFlatIP`)                                | Fast inner-product similarity search  |
 | Backend         | FastAPI + Uvicorn                                    | Async HTTP server                     |
 | Frontend        | HTMX + Embla Carousel + vanilla CSS/JS               | No-build interactive UI               |

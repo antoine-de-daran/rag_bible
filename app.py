@@ -2,6 +2,7 @@
 
 import logging
 import re
+import threading
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from html import escape as html_escape
@@ -13,6 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import (
     FileResponse,
     HTMLResponse,
+    JSONResponse,
     PlainTextResponse,
     RedirectResponse,
     Response,
@@ -31,6 +33,7 @@ logger = logging.getLogger(__name__)
 
 # Module-level state set during lifespan
 pipeline: dict[str, Any] = {}
+pipeline_ready = threading.Event()
 
 templates = Jinja2Templates(directory=Path(__file__).parent / "templates")
 
@@ -153,24 +156,36 @@ def nl2br(value: str) -> Markup:
     return Markup(escaped.replace("\n", "<br>"))
 
 
+def _load_pipeline_background() -> None:
+    """Load the retrieval pipeline in a background thread."""
+    try:
+        index, mapping, embed_model, cross_encoder = _load_pipeline()
+        pipeline["index"] = index
+        pipeline["mapping"] = mapping
+        pipeline["embed_model"] = embed_model
+        pipeline["cross_encoder"] = cross_encoder
+
+        verse_idx: dict[tuple[str, str, str], int] = {}
+        for i, entry in enumerate(mapping):
+            key = (entry["book_title"], entry["chapter"], entry["verse"])
+            verse_idx[key] = i
+        pipeline["verse_index"] = verse_idx
+
+        pipeline["loaded"] = True
+        pipeline_ready.set()
+        logger.info("Pipeline loaded successfully")
+    except Exception:
+        logger.exception("Failed to load pipeline")
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
-    """Load models once at startup."""
-    index, mapping, embed_model, cross_encoder = _load_pipeline()
-    pipeline["index"] = index
-    pipeline["mapping"] = mapping
-    pipeline["embed_model"] = embed_model
-    pipeline["cross_encoder"] = cross_encoder
-
-    verse_idx: dict[tuple[str, str, str], int] = {}
-    for i, entry in enumerate(mapping):
-        key = (entry["book_title"], entry["chapter"], entry["verse"])
-        verse_idx[key] = i
-    pipeline["verse_index"] = verse_idx
-
-    pipeline["loaded"] = True
+    """Spawn background pipeline loading so HTTP is available immediately."""
+    thread = threading.Thread(target=_load_pipeline_background, daemon=True)
+    thread.start()
     yield
     pipeline.clear()
+    pipeline_ready.clear()
 
 
 app = FastAPI(title="RAG Bible", lifespan=lifespan)
@@ -257,14 +272,23 @@ def sitemap_xml() -> Response:
 
 
 @app.get("/health")  # type: ignore[misc]
-def health() -> dict[str, str]:
-    """Health check endpoint."""
-    return {"status": "ok"}
+def health() -> Response:
+    """Health check endpoint. Returns 503 while pipeline is loading."""
+    if not pipeline_ready.is_set():
+        return JSONResponse({"status": "loading"}, status_code=503)
+    return JSONResponse({"status": "ok"})
 
 
 @app.post("/search", response_class=HTMLResponse)  # type: ignore[misc]
 def search_endpoint(request: Request, query: str = Form("")) -> HTMLResponse:
     """Search the Bible and return an HTML fragment."""
+    if not pipeline_ready.is_set():
+        return templates.TemplateResponse(
+            request=request,
+            name="loading.html",
+            context={"query": query},
+        )
+
     cleaned = sanitize_query(query)
 
     if not cleaned:

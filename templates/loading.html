@@ -1,0 +1,6 @@
+<div class="status-message loading-message" role="status" aria-live="polite"
+     hx-post="/search" hx-trigger="load delay:2s"
+     hx-target="#results" hx-swap="innerHTML"
+     hx-vals='{"query": "{{ query }}"}'>
+  <p>Chargement des modeles en cours...</p>
+</div>

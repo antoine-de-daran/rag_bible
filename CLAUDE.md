@@ -31,9 +31,9 @@ French Bible RAG with two-stage retrieval:
 2. **`rag/ingest.py`** -- ingestion pipeline: reads `bible.db` SQLite, filters short/non-content verses, encodes with SentenceTransformer, builds FAISS IndexFlatIP, writes `data/index.faiss` + `data/mapping.json`
 3. **`rag/retrieve.py`** -- two-stage search: FAISS top-K (cosine via inner product on L2-normalized vectors), then cross-encoder reranking with sigmoid score normalization
 4. **`config.py`** -- all tunable parameters (paths, model names, thresholds, retrieval K values)
-5. **`app.py`** -- FastAPI server: loads pipeline once at startup via lifespan, serves Jinja2 HTML fragments to HTMX frontend. Query sanitization, input validation, contextual verse display with surrounding verses bounded by book_id. Root URL serves SPA, SEO routes (`/robots.txt`, `/sitemap.xml`), static asset cache middleware (24h), HF-to-custom-domain redirect middleware
+5. **`app.py`** -- FastAPI server: loads pipeline in a background thread at startup (UI available immediately, `/search` returns a loading fragment with HTMX auto-retry until ready, `/health` returns 503 while loading). Query sanitization, input validation, contextual verse display with surrounding verses bounded by book_id. Root URL serves SPA, SEO routes (`/robots.txt`, `/sitemap.xml`), static asset cache middleware (24h), HF-to-custom-domain redirect middleware
 
-Data flow: `bible.db` -> ingest -> `data/{index.faiss, mapping.json}` -> app startup loads into memory -> HTMX POST `/search` -> HTML fragment response. Root `/` serves the SPA entry point.
+Data flow: `bible.db` -> ingest -> `data/{index.faiss, mapping.json}` -> app startup spawns background thread to load into memory -> HTMX POST `/search` -> HTML fragment response (or loading fragment if pipeline not yet ready). Root `/` serves the SPA entry point.
 
 ## Frontend
 
@@ -44,6 +44,7 @@ Custom design system with warm parchment aesthetic (`#f5f0e8` background, `#2a2a
 - **`static/app.js`** -- component initializers inside `DOMContentLoaded`: `initPageHeader`, `initSearchBar`, `initStatusMessages`, `initCarousel`, `initCarouselNavigation`, `initHistorySidebar`, `initOfflineDetection`. Shared state via `window.appState`
 - **`static/service-worker.js`** -- cache-first for static assets, network-only for `/search` API
 - **`templates/results.html`** -- Embla Carousel structure (viewport > track > slides) with score badges and context verses
+- **`templates/loading.html`** -- loading state with HTMX `hx-trigger="load delay:2s"` auto-retry
 - **`templates/error.html`** -- error message with "Reessayer" retry button
 - **`templates/no_results.html`** -- simple no-results feedback
 
@@ -63,7 +64,8 @@ Custom design system with warm parchment aesthetic (`#f5f0e8` background, `#2a2a
 - Cross-encoder raw scores are sigmoid-normalized to [0, 1] (0.5 = decision boundary)
 - `data/` is gitignored -- regenerate with `make ingest` (requires `bible.db` in `data/`)
 - Tests use two markers: `unit` (fast, mocked, default) and `integration` (loads real models + data)
-- App tests use `mock_pipeline` fixture from `conftest.py` to avoid loading models
+- App tests use `mock_pipeline` fixture from `conftest.py` to avoid loading models; `mock_pipeline_loading` simulates the not-yet-ready state
+- `pipeline_ready` is a `threading.Event` in `app.py`; tests patch it with set/unset events
 - Docstrings follow numpy convention
 - Line length: 100 chars
 - Python 3.12+ (uses `X | Y` union syntax)

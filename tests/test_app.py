@@ -65,6 +65,26 @@ class TestHealthEndpoint:
         assert response.status_code == 200
         assert response.json() == {"status": "ok"}
 
+    def test_returns_503_while_loading(self, mock_pipeline_loading: None) -> None:
+        from app import app as fastapi_app
+
+        loading_client = TestClient(fastapi_app, raise_server_exceptions=False)
+        response = loading_client.get("/health")
+        assert response.status_code == 503
+        assert response.json() == {"status": "loading"}
+
+
+@pytest.mark.unit
+class TestSearchLoading:
+    def test_search_returns_loading_fragment(self, mock_pipeline_loading: None) -> None:
+        from app import app as fastapi_app
+
+        loading_client = TestClient(fastapi_app, raise_server_exceptions=False)
+        response = loading_client.post("/search", data={"query": "amour"})
+        assert response.status_code == 200
+        assert "Chargement" in response.text
+        assert "hx-post" in response.text
+
 
 @pytest.mark.unit
 class TestSearchEndpoint:
