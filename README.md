@@ -58,6 +58,7 @@ startup_duration_timeout: 5m
 - [Development](#development)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
+- [Supporting the Project](#supporting-the-project)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
@@ -229,6 +230,13 @@ The `data/` directory (FAISS index, mapping, database) is stored on the HF Space
 ## Contributing
 
 Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, coding conventions, and the pull request process.
+
+## Supporting the Project
+
+If you find this tool useful, consider supporting its development:
+
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor-GitHub-333?logo=github)](https://github.com/sponsors/antoine-de-daran)
+[![Support on Ko-fi](https://img.shields.io/badge/Support-Ko--fi-e05d6f?logo=ko-fi&logoColor=white)](https://ko-fi.com/adedaran)
 
 ## License
 

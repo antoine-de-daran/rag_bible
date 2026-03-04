@@ -886,6 +886,54 @@ textarea:focus-visible {
   text-decoration: underline;
 }
 
+/* --- Support Section --- */
+
+.support-section {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: var(--space-lg) auto var(--space-xl);
+  padding: var(--space-lg) var(--space-md);
+  text-align: center;
+}
+
+.support-section .github-link {
+  margin-bottom: var(--space-md);
+}
+
+.support-links {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.support-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: opacity var(--transition-quick);
+}
+
+.support-link:hover {
+  opacity: 0.85;
+}
+
+.support-link--github {
+  color: var(--color-text-inverse);
+  background-color: #333;
+}
+
+.support-link--kofi {
+  color: var(--color-text-inverse);
+  background-color: #e05d6f;
+}
+
 /* --- Reduced Motion --- */
 
 @media (prefers-reduced-motion: reduce) {
