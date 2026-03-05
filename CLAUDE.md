@@ -30,7 +30,7 @@ French Bible RAG with two-stage retrieval:
 1. **`rag/embeddings.py`** -- model abstraction: loads SentenceTransformer (embedding) and CrossEncoder (reranking) models
 2. **`rag/ingest.py`** -- ingestion pipeline: reads `bible.db` SQLite, filters short/non-content verses, encodes with SentenceTransformer, builds FAISS IndexFlatIP, writes `data/index.faiss` + `data/mapping.json`
 3. **`rag/retrieve.py`** -- two-stage search: FAISS top-K (cosine via inner product on L2-normalized vectors), then cross-encoder reranking with sigmoid score normalization
-4. **`config.py`** -- all tunable parameters (paths, model names, thresholds, retrieval K values)
+4. **`config.py`** -- all tunable parameters (paths, model names, thresholds, retrieval K values, `ONNX_FILE_NAME` auto-detected per CPU architecture)
 5. **`app.py`** -- FastAPI server: loads pipeline in a background thread at startup (UI available immediately, `/search` returns a loading fragment with HTMX auto-retry until ready, `/health` returns 503 while loading). Query sanitization, input validation, contextual verse display with surrounding verses bounded by book_id. Root URL serves SPA, SEO routes (`/robots.txt`, `/sitemap.xml`), static asset cache middleware (24h), HF-to-custom-domain redirect middleware
 6. **`rag/feedback.py`** -- per-verse feedback: thread-safe JSONL buffer with periodic flush to HuggingFace Dataset repo via `HfApi.upload_file()`. Config-driven thresholds and intervals. Lazy-imports `huggingface_hub` to avoid startup cost
 

@@ -9,7 +9,7 @@ pinned: false
 preload_from_hub:
   - sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
   - cross-encoder/mmarco-mMiniLMv2-L12-H384-v1
-startup_duration_timeout: 5m
+startup_duration_timeout: 10m
 ---
 
 <!-- HuggingFace Spaces frontmatter above -- do not remove -->
@@ -79,6 +79,7 @@ The entire system runs locally with no external API calls, no paid dependencies,
 - **Fast** -- sub-2s response times on CPU
 - **35,000+ verses** -- complete French Bible (AELF translation)
 - **PWA-ready** -- offline support via service worker, installable on mobile
+- **Per-verse feedback** -- thumbs up/down on results, synced to HuggingFace Dataset
 - **Self-contained** -- no external APIs, runs entirely on your machine
 
 ## Live Demo
@@ -112,6 +113,7 @@ Open [http://localhost:8000](http://localhost:8000) in your browser.
 | GET    | `/health`      | Health check (200 `ok` or 503 `loading`) |
 | GET    | `/robots.txt`  | Robots.txt for crawlers                  |
 | GET    | `/sitemap.xml` | XML sitemap for crawlers                 |
+| POST   | `/feedback`    | Per-verse feedback (fire-and-forget, returns 204) |
 
 ## Architecture
 
