@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 _lock = threading.Lock()
 _scheduler: threading.Timer | None = None
 _count = 0
+_seen: dict[tuple[str, ...], str] = {}
 
 
 def record_feedback(
@@ -23,6 +24,8 @@ def record_feedback(
     buffer_path: Path,
     flush_threshold: int,
     hf_repo: str,
+    source: str = "local",
+    session_id: str = "",
 ) -> None:
     """Append a feedback record to the local JSONL buffer.
 
@@ -46,8 +49,22 @@ def record_feedback(
         Number of records that triggers an automatic flush.
     hf_repo : str
         HuggingFace Dataset repo ID for flushing.
+    source : str
+        Environment source tag ("production" or "local").
+    session_id : str
+        Browser session identifier (UUID from client).
     """
     global _count  # noqa: PLW0603
+
+    dedup_key = (session_id, query, book_title, chapter, verse)
+
+    with _lock:
+        if feedback in ("up", "down"):
+            if _seen.get(dedup_key) == feedback:
+                return
+            _seen[dedup_key] = feedback
+        elif feedback.startswith("cancel_"):
+            _seen.pop(dedup_key, None)
 
     record = {
         "query": query,
@@ -56,6 +73,8 @@ def record_feedback(
         "verse": verse,
         "score": score,
         "feedback": feedback,
+        "source": source,
+        "session_id": session_id,
         "timestamp": datetime.now(UTC).isoformat(),
     }
 
@@ -65,7 +84,7 @@ def record_feedback(
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
         _count += 1
 
-        if _count >= flush_threshold:
+        if _count >= flush_threshold and source == "production":
             _count = 0
             threading.Thread(
                 target=_flush_to_hub,

@@ -30,11 +30,11 @@ French Bible RAG with two-stage retrieval:
 1. **`rag/embeddings.py`** -- model abstraction: loads SentenceTransformer (embedding) and CrossEncoder (reranking) models
 2. **`rag/ingest.py`** -- ingestion pipeline: reads `bible.db` SQLite, filters short/non-content verses, encodes with SentenceTransformer, builds FAISS IndexFlatIP, writes `data/index.faiss` + `data/mapping.json`
 3. **`rag/retrieve.py`** -- two-stage search: FAISS top-K (cosine via inner product on L2-normalized vectors), then cross-encoder reranking with sigmoid score normalization
-4. **`config.py`** -- all tunable parameters (paths, model names, thresholds, retrieval K values, `ONNX_FILE_NAME` auto-detected per CPU architecture)
+4. **`config.py`** -- all tunable parameters (paths, model names, thresholds, retrieval K values, `ONNX_FILE_NAME` auto-detected per CPU architecture, `FEEDBACK_ENV` auto-detected from `SPACE_ID`)
 5. **`app.py`** -- FastAPI server: loads pipeline in a background thread at startup (UI available immediately, `/search` returns a loading fragment with HTMX auto-retry until ready, `/health` returns 503 while loading). Query sanitization, input validation, contextual verse display with surrounding verses bounded by book_id. Root URL serves SPA, SEO routes (`/robots.txt`, `/sitemap.xml`), static asset cache middleware (24h), HF-to-custom-domain redirect middleware
 6. **`rag/feedback.py`** -- per-verse feedback: thread-safe JSONL buffer with periodic flush to HuggingFace Dataset repo via `HfApi.upload_file()`. Config-driven thresholds and intervals. Lazy-imports `huggingface_hub` to avoid startup cost
 
-Data flow: `bible.db` -> ingest -> `data/{index.faiss, mapping.json}` -> app startup spawns background thread to load into memory -> HTMX POST `/search` -> HTML fragment response (or loading fragment if pipeline not yet ready). Root `/` serves the SPA entry point. Feedback: `POST /feedback` -> append to `data/feedback_buffer.jsonl` -> periodic flush to HF Dataset repo.
+Data flow: `bible.db` -> ingest -> `data/{index.faiss, mapping.json}` -> app startup spawns background thread to load into memory -> HTMX POST `/search` -> HTML fragment response (or loading fragment if pipeline not yet ready). Root `/` serves the SPA entry point. Feedback: `POST /feedback` -> append to JSONL buffer -> periodic flush to HF Dataset repo (production only).
 
 ## Frontend
 
@@ -74,4 +74,5 @@ Custom design system with warm parchment aesthetic (`#f5f0e8` background, `#2a2a
 - HFRedirectMiddleware in `app.py` redirects direct `hf.space` visits to custom domain (uses `X-Original-Host` header to distinguish proxy vs direct traffic)
 - Docker exposes port 7860 (HuggingFace Spaces default)
 - Version is defined in `pyproject.toml`; also displayed in sidebar (`static/index.html` `.sidebar-version`) -- keep both in sync when bumping
-- Per-verse feedback: thumbs up/down on result cards, buffered to `data/feedback_buffer.jsonl`, flushed to HF Dataset repo `adedaran/rag-bible-feedback` every 5 min or 50 records. `POST /feedback` endpoint returns 204 (fire-and-forget). Config in `config.py` (`FEEDBACK_*` constants). `HF_TOKEN` env var required for flush to work
+- Per-verse feedback: thumbs up/down on result cards, buffered to JSONL, flushed to HF Dataset repo `adedaran/rag-bible-feedback` every 5 min or 50 records. `POST /feedback` endpoint returns 204 (fire-and-forget). Config in `config.py` (`FEEDBACK_*` constants). `HF_TOKEN` env var required for flush to work. Each record includes a `session_id` (UUID generated client-side via `crypto.randomUUID()`, stored in `sessionStorage` so each tab gets its own ID)
+- `FEEDBACK_ENV` auto-detected: `"production"` on HF Spaces (`SPACE_ID` set), `"local"` otherwise. Override with `FEEDBACK_ENV=production`. Local mode writes to `data/feedback_buffer_local.jsonl` and never flushes to HF. Production mode uses `data/feedback_buffer.jsonl` with HF flush. Each record includes a `source` field

@@ -189,14 +189,16 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
     """Spawn background pipeline loading so HTTP is available immediately."""
     thread = threading.Thread(target=_load_pipeline_background, daemon=True)
     thread.start()
-    start_flush_scheduler(
-        config.FEEDBACK_BUFFER_PATH,
-        config.FEEDBACK_HF_REPO,
-        config.FEEDBACK_FLUSH_INTERVAL_S,
-    )
+    if config.FEEDBACK_ENV == "production":
+        start_flush_scheduler(
+            config.FEEDBACK_BUFFER_PATH,
+            config.FEEDBACK_HF_REPO,
+            config.FEEDBACK_FLUSH_INTERVAL_S,
+        )
     yield
-    stop_flush_scheduler()
-    flush_remaining(config.FEEDBACK_BUFFER_PATH, config.FEEDBACK_HF_REPO)
+    if config.FEEDBACK_ENV == "production":
+        stop_flush_scheduler()
+        flush_remaining(config.FEEDBACK_BUFFER_PATH, config.FEEDBACK_HF_REPO)
     pipeline.clear()
     pipeline_ready.clear()
 
@@ -350,9 +352,10 @@ def feedback_endpoint(
     verse: str = Form(""),
     score: float = Form(0.0),
     feedback: str = Form(""),
+    session_id: str = Form(""),
 ) -> Response:
     """Record per-verse relevance feedback."""
-    if feedback not in ("up", "down"):
+    if feedback not in ("up", "down", "cancel_up", "cancel_down"):
         return Response(status_code=400)
     try:
         record_feedback(
@@ -365,6 +368,8 @@ def feedback_endpoint(
             buffer_path=config.FEEDBACK_BUFFER_PATH,
             flush_threshold=config.FEEDBACK_FLUSH_THRESHOLD,
             hf_repo=config.FEEDBACK_HF_REPO,
+            source=config.FEEDBACK_ENV,
+            session_id=session_id,
         )
     except Exception:
         logger.exception("Failed to record feedback")

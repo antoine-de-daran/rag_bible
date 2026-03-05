@@ -435,6 +435,48 @@ document.addEventListener("DOMContentLoaded", function () {
     var container = document.getElementById("results-container");
     if (!container) return;
 
+    var sessionId = sessionStorage.getItem("feedback_session_id");
+    if (!sessionId) {
+      sessionId = crypto.randomUUID();
+      sessionStorage.setItem("feedback_session_id", sessionId);
+    }
+
+    function feedbackKey(card) {
+      return (
+        "fb:" +
+        (card.dataset.query || "") +
+        "|" +
+        (card.dataset.bookTitle || "") +
+        "|" +
+        (card.dataset.chapter || "") +
+        "|" +
+        (card.dataset.verse || "")
+      );
+    }
+
+    function restoreFeedbackState() {
+      var cards = container.querySelectorAll(".result-card");
+      cards.forEach(function (card) {
+        var stored = sessionStorage.getItem(feedbackKey(card));
+        if (!stored) return;
+        var btn = card.querySelector(
+          '.feedback-btn[data-feedback="' + stored + '"]'
+        );
+        if (btn) btn.setAttribute("aria-pressed", "true");
+      });
+    }
+
+    restoreFeedbackState();
+
+    document.body.addEventListener("htmx:afterSwap", function (e) {
+      if (
+        e.detail.target &&
+        e.detail.target.id === "results-container"
+      ) {
+        restoreFeedbackState();
+      }
+    });
+
     container.addEventListener("click", function (evt) {
       var btn = evt.target.closest(".feedback-btn");
       if (!btn) return;
@@ -443,9 +485,32 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!card) return;
 
       var isActive = btn.getAttribute("aria-pressed") === "true";
+      var key = feedbackKey(card);
 
       if (isActive) {
         btn.setAttribute("aria-pressed", "false");
+        sessionStorage.removeItem(key);
+
+        var cancelParams = new URLSearchParams();
+        cancelParams.set("query", card.dataset.query || "");
+        cancelParams.set("book_title", card.dataset.bookTitle || "");
+        cancelParams.set("chapter", card.dataset.chapter || "");
+        cancelParams.set("verse", card.dataset.verse || "");
+        cancelParams.set("score", card.dataset.score || "0");
+        cancelParams.set(
+          "feedback",
+          "cancel_" + btn.dataset.feedback
+        );
+        cancelParams.set("session_id", sessionId);
+
+        fetch("/feedback", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: cancelParams.toString()
+        }).catch(function () {});
+
         return;
       }
 
@@ -457,6 +522,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       btn.setAttribute("aria-pressed", "true");
+      sessionStorage.setItem(key, btn.dataset.feedback);
 
       var params = new URLSearchParams();
       params.set("query", card.dataset.query || "");
@@ -465,6 +531,7 @@ document.addEventListener("DOMContentLoaded", function () {
       params.set("verse", card.dataset.verse || "");
       params.set("score", card.dataset.score || "0");
       params.set("feedback", btn.dataset.feedback);
+      params.set("session_id", sessionId);
 
       fetch("/feedback", {
         method: "POST",
