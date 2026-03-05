@@ -26,6 +26,12 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.responses import Response as StarletteResponse
 
 import config
+from rag.feedback import (
+    flush_remaining,
+    record_feedback,
+    start_flush_scheduler,
+    stop_flush_scheduler,
+)
 from rag.retrieve import load_pipeline as _load_pipeline
 from rag.retrieve import search as _search
 
@@ -183,7 +189,14 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
     """Spawn background pipeline loading so HTTP is available immediately."""
     thread = threading.Thread(target=_load_pipeline_background, daemon=True)
     thread.start()
+    start_flush_scheduler(
+        config.FEEDBACK_BUFFER_PATH,
+        config.FEEDBACK_HF_REPO,
+        config.FEEDBACK_FLUSH_INTERVAL_S,
+    )
     yield
+    stop_flush_scheduler()
+    flush_remaining(config.FEEDBACK_BUFFER_PATH, config.FEEDBACK_HF_REPO)
     pipeline.clear()
     pipeline_ready.clear()
 
@@ -327,3 +340,32 @@ def search_endpoint(request: Request, query: str = Form("")) -> HTMLResponse:
         name="results.html",
         context={"results": relevant, "query": cleaned},
     )
+
+
+@app.post("/feedback")  # type: ignore[misc]
+def feedback_endpoint(
+    query: str = Form(""),
+    book_title: str = Form(""),
+    chapter: str = Form(""),
+    verse: str = Form(""),
+    score: float = Form(0.0),
+    feedback: str = Form(""),
+) -> Response:
+    """Record per-verse relevance feedback."""
+    if feedback not in ("up", "down"):
+        return Response(status_code=400)
+    try:
+        record_feedback(
+            query=query,
+            book_title=book_title,
+            chapter=chapter,
+            verse=verse,
+            score=score,
+            feedback=feedback,
+            buffer_path=config.FEEDBACK_BUFFER_PATH,
+            flush_threshold=config.FEEDBACK_FLUSH_THRESHOLD,
+            hf_repo=config.FEEDBACK_HF_REPO,
+        )
+    except Exception:
+        logger.exception("Failed to record feedback")
+    return Response(status_code=204)

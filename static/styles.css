@@ -564,6 +564,45 @@ h1 {
   color: var(--color-text-card);
 }
 
+/* --- Card Footer / Feedback --- */
+
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-xs);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-sm);
+}
+
+.feedback-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target-desktop);
+  height: var(--touch-target-desktop);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: color var(--transition-quick),
+              background-color var(--transition-quick);
+}
+
+.feedback-btn:hover {
+  background: var(--color-highlight);
+}
+
+.feedback-up[aria-pressed="true"] {
+  color: var(--color-score-high);
+}
+
+.feedback-down[aria-pressed="true"] {
+  color: var(--color-feedback-error);
+}
+
 /* --- Status Messages --- */
 
 .status-message {
@@ -974,6 +1013,11 @@ textarea:focus-visible {
   }
 
   .history-delete {
+    width: var(--touch-target-mobile);
+    height: var(--touch-target-mobile);
+  }
+
+  .feedback-btn {
     width: var(--touch-target-mobile);
     height: var(--touch-target-mobile);
   }

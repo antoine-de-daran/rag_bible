@@ -431,6 +431,51 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  function initFeedback() {
+    var container = document.getElementById("results-container");
+    if (!container) return;
+
+    container.addEventListener("click", function (evt) {
+      var btn = evt.target.closest(".feedback-btn");
+      if (!btn) return;
+
+      var card = btn.closest(".result-card");
+      if (!card) return;
+
+      var isActive = btn.getAttribute("aria-pressed") === "true";
+
+      if (isActive) {
+        btn.setAttribute("aria-pressed", "false");
+        return;
+      }
+
+      var sibling = card.querySelector(
+        '.feedback-btn[aria-pressed="true"]'
+      );
+      if (sibling) {
+        sibling.setAttribute("aria-pressed", "false");
+      }
+
+      btn.setAttribute("aria-pressed", "true");
+
+      var params = new URLSearchParams();
+      params.set("query", card.dataset.query || "");
+      params.set("book_title", card.dataset.bookTitle || "");
+      params.set("chapter", card.dataset.chapter || "");
+      params.set("verse", card.dataset.verse || "");
+      params.set("score", card.dataset.score || "0");
+      params.set("feedback", btn.dataset.feedback);
+
+      fetch("/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: params.toString()
+      }).catch(function () {});
+    });
+  }
+
   function initHistorySidebar(appState) {
     var toggle = document.querySelector(".sidebar-toggle");
     var sidebar = document.getElementById("history-sidebar");
@@ -719,6 +764,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initStatusMessages(window.appState);
   initCarousel(window.appState);
   initCarouselNavigation(window.appState);
+  initFeedback(window.appState);
   initHistorySidebar(window.appState);
   initExampleQueries(window.appState);
   initScrollHint();

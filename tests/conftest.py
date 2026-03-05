@@ -211,6 +211,9 @@ def mock_pipeline() -> Generator[None, None, None]:
         patch("app.pipeline_ready", ready),
         patch("app._run_search", side_effect=lambda q: _mock_search_results(relevant=True)),
         patch("app.get_verse_context", side_effect=_mock_context),
+        patch("app.start_flush_scheduler"),
+        patch("app.stop_flush_scheduler"),
+        patch("app.flush_remaining"),
     ):
         yield
 
@@ -227,6 +230,9 @@ def mock_pipeline_low_scores() -> Generator[None, None, None]:
         patch("app.pipeline_ready", ready),
         patch("app._run_search", side_effect=lambda q: _mock_search_results(relevant=False)),
         patch("app.get_verse_context", side_effect=_mock_context),
+        patch("app.start_flush_scheduler"),
+        patch("app.stop_flush_scheduler"),
+        patch("app.flush_remaining"),
     ):
         yield
 
@@ -240,6 +246,9 @@ def mock_pipeline_loading() -> Generator[None, None, None]:
     with (
         patch("app.pipeline", {}),
         patch("app.pipeline_ready", not_ready),
+        patch("app.start_flush_scheduler"),
+        patch("app.stop_flush_scheduler"),
+        patch("app.flush_remaining"),
     ):
         yield
 

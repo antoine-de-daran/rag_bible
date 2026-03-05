@@ -38,3 +38,9 @@ SCORE_LABELS: list[tuple[float, str]] = [
 ]
 MAX_QUERY_LENGTH: int = 300
 CONTEXT_VERSES: int = 2
+
+# Feedback
+FEEDBACK_BUFFER_PATH: Path = DATA_DIR / "feedback_buffer.jsonl"
+FEEDBACK_HF_REPO: str = os.environ.get("FEEDBACK_HF_REPO", "adedaran/rag-bible-feedback")
+FEEDBACK_FLUSH_THRESHOLD: int = 5
+FEEDBACK_FLUSH_INTERVAL_S: int = 300  # 5 minutes

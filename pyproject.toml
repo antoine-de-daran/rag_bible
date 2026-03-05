@@ -11,6 +11,7 @@ dependencies = [
     "uvicorn[standard]>=0.34.0",
     "jinja2>=3.1.0",
     "python-multipart>=0.0.20",
+    "huggingface_hub>=0.20.0",
 ]
 
 [dependency-groups]
@@ -48,6 +49,7 @@ module = [
     "fastapi.*",
     "starlette.*",
     "markupsafe.*",
+    "huggingface_hub.*",
 ]
 ignore_missing_imports = true
 

@@ -32,8 +32,9 @@ French Bible RAG with two-stage retrieval:
 3. **`rag/retrieve.py`** -- two-stage search: FAISS top-K (cosine via inner product on L2-normalized vectors), then cross-encoder reranking with sigmoid score normalization
 4. **`config.py`** -- all tunable parameters (paths, model names, thresholds, retrieval K values)
 5. **`app.py`** -- FastAPI server: loads pipeline in a background thread at startup (UI available immediately, `/search` returns a loading fragment with HTMX auto-retry until ready, `/health` returns 503 while loading). Query sanitization, input validation, contextual verse display with surrounding verses bounded by book_id. Root URL serves SPA, SEO routes (`/robots.txt`, `/sitemap.xml`), static asset cache middleware (24h), HF-to-custom-domain redirect middleware
+6. **`rag/feedback.py`** -- per-verse feedback: thread-safe JSONL buffer with periodic flush to HuggingFace Dataset repo via `HfApi.upload_file()`. Config-driven thresholds and intervals. Lazy-imports `huggingface_hub` to avoid startup cost
 
-Data flow: `bible.db` -> ingest -> `data/{index.faiss, mapping.json}` -> app startup spawns background thread to load into memory -> HTMX POST `/search` -> HTML fragment response (or loading fragment if pipeline not yet ready). Root `/` serves the SPA entry point.
+Data flow: `bible.db` -> ingest -> `data/{index.faiss, mapping.json}` -> app startup spawns background thread to load into memory -> HTMX POST `/search` -> HTML fragment response (or loading fragment if pipeline not yet ready). Root `/` serves the SPA entry point. Feedback: `POST /feedback` -> append to `data/feedback_buffer.jsonl` -> periodic flush to HF Dataset repo.
 
 ## Frontend
 
@@ -41,7 +42,7 @@ Custom design system with warm parchment aesthetic (`#f5f0e8` background, `#2a2a
 
 - **`static/index.html`** -- single-page HTMX app with semantic HTML, Crimson Text font, offline banner, sidebar toggle, search form, JSON-LD structured data, OG/Twitter meta tags, inline SVG favicon, example queries section
 - **`static/styles.css`** -- CSS custom properties (design tokens) in `:root`, mobile-first responsive, `prefers-reduced-motion` support
-- **`static/app.js`** -- component initializers inside `DOMContentLoaded`: `initPageHeader`, `initSearchBar`, `initStatusMessages`, `initCarousel`, `initCarouselNavigation`, `initHistorySidebar`, `initExampleQueries`, `initScrollHint`, `initOfflineDetection`. Shared state via `window.appState`
+- **`static/app.js`** -- component initializers inside `DOMContentLoaded`: `initPageHeader`, `initSearchBar`, `initStatusMessages`, `initCarousel`, `initCarouselNavigation`, `initFeedback`, `initHistorySidebar`, `initExampleQueries`, `initScrollHint`, `initOfflineDetection`. Shared state via `window.appState`
 - **`static/service-worker.js`** -- cache-first for static assets, network-only for `/search` API
 - **`templates/results.html`** -- Embla Carousel structure (viewport > track > slides) with score badges and context verses
 - **`templates/loading.html`** -- loading state with HTMX `hx-trigger="load delay:2s"` auto-retry
@@ -73,3 +74,4 @@ Custom design system with warm parchment aesthetic (`#f5f0e8` background, `#2a2a
 - HFRedirectMiddleware in `app.py` redirects direct `hf.space` visits to custom domain (uses `X-Original-Host` header to distinguish proxy vs direct traffic)
 - Docker exposes port 7860 (HuggingFace Spaces default)
 - Version is defined in `pyproject.toml`; also displayed in sidebar (`static/index.html` `.sidebar-version`) -- keep both in sync when bumping
+- Per-verse feedback: thumbs up/down on result cards, buffered to `data/feedback_buffer.jsonl`, flushed to HF Dataset repo `adedaran/rag-bible-feedback` every 5 min or 50 records. `POST /feedback` endpoint returns 204 (fire-and-forget). Config in `config.py` (`FEEDBACK_*` constants). `HF_TOKEN` env var required for flush to work
