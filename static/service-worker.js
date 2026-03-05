@@ -1,4 +1,4 @@
-var CACHE_NAME = "rag-bible-v5";
+var CACHE_NAME = "rag-bible-v6";
 var CACHE_FILES = [
   "/static/index.html",
   "/static/styles.css",
@@ -11,6 +11,7 @@ var CACHE_FILES = [
 ];
 
 self.addEventListener("install", function (event) {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(function (cache) {
       return cache.addAll(CACHE_FILES);
@@ -26,7 +27,7 @@ self.addEventListener("activate", function (event) {
           .filter(function (name) { return name !== CACHE_NAME; })
           .map(function (name) { return caches.delete(name); })
       );
-    })
+    }).then(function () { return self.clients.claim(); })
   );
 });
 
