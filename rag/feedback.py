@@ -89,10 +89,6 @@ def _flush_to_hub(buffer_path: Path, hf_repo: str) -> None:
             if not buffer_path.exists() or buffer_path.stat().st_size == 0:
                 return
             data = buffer_path.read_bytes()
-            buffer_path.write_text("")
-
-        global _count  # noqa: PLW0603
-        _count = 0
 
         from huggingface_hub import HfApi
 
@@ -104,6 +100,18 @@ def _flush_to_hub(buffer_path: Path, hf_repo: str) -> None:
             repo_id=hf_repo,
             repo_type="dataset",
         )
+
+        with _lock:
+            # Remove only the bytes we successfully uploaded;
+            # new records appended during upload are preserved.
+            current = buffer_path.read_bytes()
+            if current.startswith(data):
+                buffer_path.write_bytes(current[len(data) :])
+            else:
+                buffer_path.write_text("")
+
+        global _count  # noqa: PLW0603
+        _count = 0
         logger.info("Flushed feedback to %s", hf_repo)
     except Exception:
         logger.exception("Failed to flush feedback to HF Hub")
