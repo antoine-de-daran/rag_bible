@@ -564,43 +564,51 @@ h1 {
   color: var(--color-text-card);
 }
 
-/* --- Card Footer / Feedback --- */
+/* --- Header Actions / Feedback --- */
 
-.card-footer {
+.card-header-actions {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
   gap: var(--space-xs);
-  padding-top: var(--space-sm);
-  border-top: 1px solid var(--color-border);
-  margin-top: var(--space-sm);
+}
+
+.feedback-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .feedback-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--touch-target-desktop);
-  height: var(--touch-target-desktop);
+  width: 28px;
+  height: 28px;
   padding: 0;
   border: none;
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--color-text-muted);
   cursor: pointer;
+  opacity: 0.5;
   transition: color var(--transition-quick),
-              background-color var(--transition-quick);
+              background-color var(--transition-quick),
+              opacity var(--transition-quick);
 }
 
 .feedback-btn:hover {
   background: var(--color-highlight);
+  opacity: 1;
 }
 
 .feedback-up[aria-pressed="true"] {
   color: var(--color-score-high);
+  opacity: 1;
 }
 
 .feedback-down[aria-pressed="true"] {
   color: var(--color-feedback-error);
+  opacity: 1;
 }
 
 /* --- Status Messages --- */
@@ -1018,8 +1026,8 @@ textarea:focus-visible {
   }
 
   .feedback-btn {
-    width: var(--touch-target-mobile);
-    height: var(--touch-target-mobile);
+    width: 32px;
+    height: 32px;
   }
 
   .example-query {
