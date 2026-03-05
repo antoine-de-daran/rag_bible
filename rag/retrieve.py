@@ -1,7 +1,6 @@
 """Two-stage retrieval: FAISS vector search + cross-encoder reranking."""
 
 import json
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -50,16 +49,10 @@ def load_pipeline(
     idx_path = index_path or config.INDEX_PATH
     map_path = mapping_path or config.MAPPING_PATH
 
-    with ThreadPoolExecutor(max_workers=4) as pool:
-        f_index = pool.submit(lambda: faiss.read_index(str(idx_path)))
-        f_mapping = pool.submit(lambda: _load_mapping(map_path))
-        f_embed = pool.submit(load_embedding_model)
-        f_cross = pool.submit(load_cross_encoder)
-
-        index = f_index.result()
-        mapping = f_mapping.result()
-        embed_model = f_embed.result()
-        cross_encoder = f_cross.result()
+    index = faiss.read_index(str(idx_path))
+    mapping = _load_mapping(map_path)
+    embed_model = load_embedding_model()
+    cross_encoder = load_cross_encoder()
 
     return index, mapping, embed_model, cross_encoder
 

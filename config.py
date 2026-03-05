@@ -1,6 +1,7 @@
 """Central configuration for the RAG Bible pipeline."""
 
 import os
+import platform
 from pathlib import Path
 
 # Paths
@@ -15,6 +16,15 @@ EMBEDDING_DIMENSION: int = 384
 
 # Cross-encoder model
 CROSS_ENCODER_MODEL: str = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
+
+# ONNX quantized model file (architecture-specific)
+_machine = platform.machine()
+_onnx_map: dict[str, str] = {
+    "x86_64": "onnx/model_qint8_avx512.onnx",
+    "AMD64": "onnx/model_qint8_avx512.onnx",
+    "arm64": "onnx/model_qint8_arm64.onnx",
+}
+ONNX_FILE_NAME: str = _onnx_map.get(_machine, "onnx/model.onnx")
 
 # Retrieval parameters
 FAISS_TOP_K: int = 20

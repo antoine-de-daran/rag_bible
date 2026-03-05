@@ -10,10 +10,12 @@ RUN uv sync --frozen --no-dev
 COPY config.py ./
 COPY rag/ rag/
 
-# Pre-export ONNX models at build time (cached in image layer)
+# Pre-download and load quantized ONNX models at build time (cached in layer)
 RUN uv run python -c "\
 from rag.embeddings import load_embedding_model, load_cross_encoder; \
-load_embedding_model(); load_cross_encoder()"
+print('Loading embedding model...'); load_embedding_model(); \
+print('Loading cross-encoder...'); load_cross_encoder(); \
+print('Models cached.')"
 
 COPY app.py ./
 COPY templates/ templates/
