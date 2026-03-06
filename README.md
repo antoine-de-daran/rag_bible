@@ -18,7 +18,7 @@ startup_duration_timeout: 10m
 
 <p align="center">
   Semantic search through the French Bible, powered by retrieval-augmented generation.<br>
-  <a href="https://recherche-biblique.com"><strong>recherche-biblique.com</strong></a>
+  🔗 <a href="https://recherche-biblique.com"><strong>recherche-biblique.com</strong></a>
 </p>
 
 <p align="center">
