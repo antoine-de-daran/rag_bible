@@ -17,8 +17,7 @@ startup_duration_timeout: 10m
 <h1 align="center">« Sondez les Écritures »</h1>
 
 <p align="center">
-  Semantic search through the French Bible, powered by retrieval-augmented generation.<br>
-  🔗 <a href="https://recherche-biblique.com"><strong>recherche-biblique.com</strong></a>
+  Semantic search through the French Bible, powered by retrieval-augmented generation.
 </p>
 
 <p align="center">
@@ -39,6 +38,10 @@ startup_duration_timeout: 10m
 
 <p align="center">
   <img src="assets/demo.gif" alt="RAG Bible demo" width="600">
+</p>
+
+<p align="center">
+  🔗 <a href="https://recherche-biblique.com"><strong>recherche-biblique.com</strong></a>
 </p>
 
 ## Table of Contents
