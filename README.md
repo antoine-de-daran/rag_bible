@@ -36,12 +36,9 @@ startup_duration_timeout: 10m
   </a>
 </p>
 
-<!-- TODO: Record a demo GIF and place it at docs/demo.gif -->
-<!--
 <p align="center">
-  <img src="docs/demo.gif" alt="RAG Bible demo" width="720">
+  <img src="assets/demo.gif" alt="RAG Bible demo" width="720">
 </p>
--->
 
 ---
 
