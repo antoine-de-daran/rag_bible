@@ -12,12 +12,13 @@ preload_from_hub:
 startup_duration_timeout: 10m
 ---
 
-<!-- HuggingFace Spaces frontmatter above -- do not remove -->
+<!-- HuggingFace Spaces frontmatter above — do not remove -->
 
 <h1 align="center">« Sondez les Écritures »</h1>
 
 <p align="center">
-  Semantic search through the French Bible, powered by retrieval-augmented generation.
+  Semantic search through the French Bible, powered by retrieval-augmented generation.<br>
+  <a href="https://recherche-biblique.com"><strong>recherche-biblique.com</strong></a>
 </p>
 
 <p align="center">
@@ -37,16 +38,13 @@ startup_duration_timeout: 10m
 </p>
 
 <p align="center">
-  <img src="assets/demo.gif" alt="RAG Bible demo" width="720">
+  <img src="assets/demo.gif" alt="RAG Bible demo" width="600">
 </p>
-
----
 
 ## Table of Contents
 
 - [About](#about)
 - [Features](#features)
-- [Live Demo](#live-demo)
 - [Quick Start](#quick-start)
 - [Usage](#usage)
 - [Architecture](#architecture)
@@ -63,25 +61,21 @@ startup_duration_timeout: 10m
 
 Finding a half-remembered verse in a 35,000-verse corpus is hard when you only remember the idea, not the exact words. Traditional keyword search falls short because biblical language is rich with synonyms, metaphors, and paraphrase.
 
-RAG Bible solves this with **semantic search**: describe a concept in plain French and get the most relevant verses back, ranked by meaning -- not just keyword overlap. It combines a multilingual sentence transformer for broad recall with a cross-encoder reranker for precision, delivering results in under two seconds.
+RAG Bible solves this with **semantic search**: describe a concept in plain French and get the most relevant verses back, ranked by meaning — not just keyword overlap. It combines a multilingual sentence transformer for broad recall with a cross-encoder reranker for precision, delivering results in under two seconds.
 
 The entire system runs locally with no external API calls, no paid dependencies, and no GPU required. It ships as a single Docker container and is deployed on Hugging Face Spaces for anyone to try.
 
 ## Features
 
-- **Semantic search** -- find verses by meaning, not just keywords
-- **Two-stage retrieval** -- FAISS vector search for recall, cross-encoder reranking for precision
-- **Contextual results** -- each match includes surrounding verses for readable context
-- **Instant startup** -- background pipeline loading; UI available in < 1s, search auto-retries until models are ready
-- **Fast** -- sub-2s response times on CPU
-- **35,000+ verses** -- complete French Bible (AELF translation)
-- **PWA-ready** -- offline support via service worker, installable on mobile
-- **Per-verse feedback** -- thumbs up/down on results, synced to HuggingFace Dataset
-- **Self-contained** -- no external APIs, runs entirely on your machine
-
-## Live Demo
-
-Try it now: **[recherche-biblique.com](https://recherche-biblique.com)**
+- **Semantic search** — find verses by meaning, not just keywords
+- **Two-stage retrieval** — FAISS vector search for recall, cross-encoder reranking for precision
+- **Contextual results** — each match includes surrounding verses for readable context
+- **Instant startup** — background pipeline loading; UI available in < 1s, search auto-retries until models are ready
+- **Fast** — sub-2s response times on CPU
+- **35,000+ verses** — complete French Bible (AELF translation)
+- **PWA-ready** — offline support via service worker, installable on mobile
+- **Per-verse feedback** — thumbs up/down on results, synced to HuggingFace Dataset
+- **Self-contained** — no external APIs, runs entirely on your machine
 
 ## Quick Start
 
@@ -114,29 +108,9 @@ Open [http://localhost:8000](http://localhost:8000) in your browser.
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    subgraph offline ["Offline (Ingestion)"]
-        direction LR
-        DB[(bible.db)] --> F[Filter verses]
-        F --> E["SentenceTransformer<br/>encode"]
-        E --> IDX[FAISS Index]
-        E --> MAP[mapping.json]
-    end
-
-    subgraph online ["Online (Search)"]
-        direction LR
-        Q[User query] --> S[Sanitize]
-        S --> EQ[Encode query]
-        EQ --> FK[FAISS top-K]
-        FK --> CR["Cross-encoder<br/>rerank"]
-        CR --> CTX[Context verses]
-        CTX --> HTML["HTMX HTML<br/>fragment"]
-    end
-
-    IDX -.-> FK
-    MAP -.-> CTX
-```
+<p align="center">
+  <img src="assets/architecture.svg" alt="Architecture diagram">
+</p>
 
 **Ingestion** reads `bible.db`, filters short/non-content verses (< 10 chars or < 3 words), encodes them with a multilingual sentence transformer, L2-normalizes the embeddings, and stores them in a FAISS `IndexFlatIP` index alongside a JSON mapping of verse metadata.
 
@@ -145,31 +119,38 @@ flowchart LR
 ## Project Structure
 
 ```
-config.py           # Central configuration (paths, models, thresholds)
-app.py              # FastAPI application + background pipeline loading
-rag/                # Core package
-  embeddings.py     #   Model loading and text encoding
-  ingest.py         #   Ingestion: filter, embed, index
-  retrieve.py       #   Two-stage retrieval: FAISS + cross-encoder
-templates/              # Jinja2 HTML fragments
-  results.html          #   Search results (Embla Carousel)
-  context_verses.html   #   Surrounding context verses
-  loading.html          #   Loading state with HTMX auto-retry
-  error.html            #   Error display
-  no_results.html       #   No results feedback
-static/             # Frontend assets (no build step)
-  index.html        #   SPA entry point (HTMX)
-  styles.css        #   Design system (CSS custom properties)
-  app.js            #   Component initializers
-  service-worker.js #   Cache-first PWA worker
-tests/              # Test suite
-  test_app.py       #   App endpoint tests
-  test_ingest.py    #   Ingestion pipeline tests
-  test_retrieve.py  #   Retrieval logic tests
-data/               # Generated artifacts (gitignored)
-  bible.db          #   SQLite source database
-  index.faiss       #   FAISS vector index
-  mapping.json      #   Verse metadata mapping
+config.py              # Central configuration (paths, models, thresholds)
+app.py                 # FastAPI application + background pipeline loading
+rag/                   # Core package
+  embeddings.py        #   Model loading and text encoding
+  ingest.py            #   Ingestion: filter, embed, index
+  retrieve.py          #   Two-stage retrieval: FAISS + cross-encoder
+  feedback.py          #   Per-verse feedback buffer + HF Dataset flush
+templates/             # Jinja2 HTML fragments
+  results.html         #   Search results (Embla Carousel)
+  context_verses.html  #   Surrounding context verses
+  loading.html         #   Loading state with HTMX auto-retry
+  error.html           #   Error display
+  no_results.html      #   No results feedback
+static/                # Frontend assets (no build step)
+  index.html           #   SPA entry point (HTMX)
+  styles.css           #   Design system (CSS custom properties)
+  app.js               #   Component initializers
+  service-worker.js    #   Cache-first PWA worker
+  manifest.json        #   PWA manifest
+  favicon.svg          #   Inline SVG favicon
+tests/                 # Test suite
+  conftest.py          #   Shared fixtures (mock_pipeline, etc.)
+  test_app.py          #   App endpoint tests
+  test_embeddings.py   #   Embedding model tests
+  test_feedback.py     #   Feedback pipeline tests
+  test_ingest.py       #   Ingestion pipeline tests
+  test_integration.py  #   Integration tests (requires models + data/)
+  test_retrieve.py     #   Retrieval logic tests
+data/                  # Generated artifacts (gitignored)
+  bible.db             #   SQLite source database
+  index.faiss          #   FAISS vector index
+  mapping.json         #   Verse metadata mapping
 ```
 
 ## Tech Stack
@@ -221,8 +202,8 @@ make docker-serve   # run on port 7860
 
 The project deploys automatically via GitHub Actions. On every push to `master`:
 
-1. **Quality gate** -- runs lint and unit tests
-2. **Deploy** -- syncs code to the [HF Space](https://huggingface.co/spaces/adedaran/rag-bible), which builds the Docker image and serves the app
+1. **Quality gate** — runs lint and unit tests
+2. **Deploy** — syncs code to the [HF Space](https://huggingface.co/spaces/adedaran/rag-bible), which builds the Docker image and serves the app
 
 The `data/` directory (FAISS index, mapping, database) is stored on the HF Space via Git LFS and is not re-uploaded on each deploy.
 
