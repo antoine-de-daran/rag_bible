@@ -442,16 +442,17 @@ document.addEventListener("DOMContentLoaded", function () {
       // sessionStorage blocked (Safari cross-origin/privacy)
     }
     if (!sessionId) {
-      sessionId =
-        typeof crypto.randomUUID === "function"
-          ? crypto.randomUUID()
-          : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-              /[xy]/g,
-              function (c) {
-                var r = (Math.random() * 16) | 0;
-                return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-              }
-            );
+      try {
+        sessionId = crypto.randomUUID();
+      } catch (e) {
+        sessionId = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+          /[xy]/g,
+          function (c) {
+            var r = (Math.random() * 16) | 0;
+            return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+          }
+        );
+      }
       try {
         sessionStorage.setItem("feedback_session_id", sessionId);
       } catch (e) {
