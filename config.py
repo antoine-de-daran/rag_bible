@@ -29,6 +29,7 @@ ONNX_FILE_NAME: str = _onnx_map.get(_machine, "onnx/model.onnx")
 # Retrieval parameters
 FAISS_TOP_K: int = 20
 RERANK_TOP_K: int = 5
+SEARCH_CACHE_SIZE: int = 128
 
 # Ingestion filters
 MIN_TEXT_LENGTH: int = 10

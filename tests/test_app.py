@@ -304,6 +304,70 @@ class TestAdversarialInput:
         assert "Veuillez saisir" in response.text
 
 
+# -- Search cache tests --
+
+
+@pytest.mark.unit
+class TestSearchCache:
+    _fake_pipeline: dict[str, Any] = {
+        "index": "idx",
+        "mapping": [],
+        "embed_model": "emb",
+        "cross_encoder": "ce",
+    }
+
+    def test_repeated_query_hits_cache(self) -> None:
+        """Identical queries should use cached results."""
+        from unittest.mock import MagicMock, patch
+
+        from app import _run_search, _run_search_cached
+
+        _run_search_cached.cache_clear()
+        mock_search = MagicMock(return_value=[{"score": 0.9, "text": "v"}])
+        with (
+            patch("app.pipeline", self._fake_pipeline),
+            patch("app._search", mock_search),
+        ):
+            r1 = _run_search("amour de Dieu")
+            r2 = _run_search("amour de Dieu")
+        assert r1 == r2
+        assert mock_search.call_count == 1
+
+    def test_different_queries_cached_separately(self) -> None:
+        """Different queries should produce separate cache entries."""
+        from unittest.mock import MagicMock, patch
+
+        from app import _run_search, _run_search_cached
+
+        _run_search_cached.cache_clear()
+        mock_search = MagicMock(side_effect=lambda q, *a: [{"score": 0.9, "text": q}])
+        with (
+            patch("app.pipeline", self._fake_pipeline),
+            patch("app._search", mock_search),
+        ):
+            r1 = _run_search("query a")
+            r2 = _run_search("query b")
+        assert r1 != r2
+        assert mock_search.call_count == 2
+
+    def test_cached_results_are_independent_copies(self) -> None:
+        """Mutating returned results must not affect cached data."""
+        from unittest.mock import MagicMock, patch
+
+        from app import _run_search, _run_search_cached
+
+        _run_search_cached.cache_clear()
+        mock_search = MagicMock(return_value=[{"score": 0.9, "text": "v"}])
+        with (
+            patch("app.pipeline", self._fake_pipeline),
+            patch("app._search", mock_search),
+        ):
+            r1 = _run_search("cache test")
+            r1[0]["mutated"] = True
+            r2 = _run_search("cache test")
+        assert "mutated" not in r2[0]
+
+
 # -- Integration test --
 
 

@@ -1,5 +1,6 @@
 """FastAPI application serving the RAG Bible search interface."""
 
+import functools
 import logging
 import re
 import threading
@@ -83,8 +84,9 @@ def get_score_label(score: float) -> str:
     return config.SCORE_LABELS[-1][1]
 
 
-def _run_search(query: str) -> list[dict[str, Any]]:
-    """Run the retrieval pipeline on a query."""
+@functools.lru_cache(maxsize=config.SEARCH_CACHE_SIZE)
+def _run_search_cached(query: str) -> list[dict[str, Any]]:
+    """Run the retrieval pipeline on a query (cached)."""
     return _search(
         query,
         pipeline["index"],
@@ -92,6 +94,11 @@ def _run_search(query: str) -> list[dict[str, Any]]:
         pipeline["embed_model"],
         pipeline["cross_encoder"],
     )
+
+
+def _run_search(query: str) -> list[dict[str, Any]]:
+    """Return search results, copying dicts to avoid cache mutation."""
+    return [dict(r) for r in _run_search_cached(query)]
 
 
 def get_verse_context(
@@ -199,6 +206,7 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
     if config.FEEDBACK_ENV == "production":
         stop_flush_scheduler()
         flush_remaining(config.FEEDBACK_BUFFER_PATH, config.FEEDBACK_HF_REPO)
+    _run_search_cached.cache_clear()
     pipeline.clear()
     pipeline_ready.clear()
 
