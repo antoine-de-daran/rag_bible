@@ -3,6 +3,7 @@
 import json
 import logging
 import threading
+from collections import OrderedDict
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -11,7 +12,8 @@ logger = logging.getLogger(__name__)
 _lock = threading.Lock()
 _scheduler: threading.Timer | None = None
 _count = 0
-_seen: dict[tuple[str, ...], str] = {}
+_SEEN_MAX_SIZE = 10_000
+_seen: OrderedDict[tuple[str, ...], str] = OrderedDict()
 
 
 def record_feedback(
@@ -63,22 +65,24 @@ def record_feedback(
             if _seen.get(dedup_key) == feedback:
                 return
             _seen[dedup_key] = feedback
+            _seen.move_to_end(dedup_key)
+            if len(_seen) > _SEEN_MAX_SIZE:
+                _seen.popitem(last=False)
         elif feedback.startswith("cancel_"):
             _seen.pop(dedup_key, None)
 
-    record = {
-        "query": query,
-        "book_title": book_title,
-        "chapter": chapter,
-        "verse": verse,
-        "score": score,
-        "feedback": feedback,
-        "source": source,
-        "session_id": session_id,
-        "timestamp": datetime.now(UTC).isoformat(),
-    }
+        record = {
+            "query": query,
+            "book_title": book_title,
+            "chapter": chapter,
+            "verse": verse,
+            "score": score,
+            "feedback": feedback,
+            "source": source,
+            "session_id": session_id,
+            "timestamp": datetime.now(UTC).isoformat(),
+        }
 
-    with _lock:
         buffer_path.parent.mkdir(parents=True, exist_ok=True)
         with open(buffer_path, "a", encoding="utf-8") as f:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
